@@ -1,0 +1,10 @@
+title: TalkItOver
+description: >-
+  Mach deine Site talkable: ein Button, der die Seite an den LLM des Lesers
+  übergibt. Kein gehostetes LLM, kein Betrieb.
+url: https://raifdmueller.github.io
+baseurl: /talkitover
+lang: de
+
+# Rezepte und Prompts tragen bewusst kein Front Matter. Jekyll kopiert sie
+# dadurch unverändert – Claude Code bekommt Rohtext, keine HTML-Hülle (#8).

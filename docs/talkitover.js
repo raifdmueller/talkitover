@@ -1,22 +1,72 @@
-/* TalkItOver — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.0 — hand this page to the reader's own LLM.
  *
- * <script src="talkitover.js"><\/script>
+ * MIT License · Copyright (c) 2026 Ralf D. Müller
+ * https://github.com/raifdmueller/talkitover
+ *
+ * <script src="talkitover.js"></script>
  * <talk-it-over url="https://example.org/episode-331.md"
- *               prompt="Lade {url}. Ich möchte den Inhalt mit Dir besprechen."
+ *               prompt="Load {url}. I would like to talk it over."
  *               label="Let's talk it over"
  *               providers="claude,chatgpt,copy"></talk-it-over>
  *
+ * Vendor this file into your repository — it must not be loaded from a CDN or
+ * from the hub site, so the button keeps working when they do not.
+ *
  * The button remembers the reader's provider (localStorage, if available).
  * The chevron reopens the choice. Add providers via TalkItOver.providers.
+ *
+ * data-prompt carries the content type and its version ("referenz@1") for later
+ * update pull requests. This file never reads it.
  */
 (function () {
+  const VERSION = "1.0.0";
   const STORAGE_KEY = "talkitover.provider";
+
+  /* Above this length a provider link is no longer safe: browsers, proxies and
+   * the providers themselves truncate long URLs, and a truncated prompt fails
+   * silently. Beyond it the prompt goes to the clipboard instead.
+   * The number is a conservative guess until Spike #9 measures the real one. */
+  const MAX_URL_LENGTH = 6000;
+
+  const DEFAULTS = {
+    label: "Let's talk it over",
+    prompt: "Load {url} and talk it over with me. Cite what you use.",
+  };
 
   const providers = {
     claude: { name: "with Claude", url: (p) => "https://claude.ai/new?q=" + p },
     chatgpt: { name: "with ChatGPT", url: (p) => "https://chatgpt.com/?q=" + p },
     copy: { name: "or copy the prompt", copy: true },
   };
+
+  // ─── Logik ──────────────────────────────────────────────────────────────────
+
+  function buildPrompt(template, url) {
+    return String(template).replaceAll("{url}", url);
+  }
+
+  function providerUrl(id, prompt) {
+    const provider = providers[id];
+    if (!provider || !provider.url) return null;
+    return provider.url(encodeURIComponent(prompt));
+  }
+
+  function needsClipboardFallback(id, prompt) {
+    const url = providerUrl(id, prompt);
+    return url !== null && url.length > api.maxUrlLength;
+  }
+
+  const api = {
+    version: VERSION,
+    providers,
+    defaults: DEFAULTS,
+    maxUrlLength: MAX_URL_LENGTH,
+    buildPrompt,
+    providerUrl,
+    needsClipboardFallback,
+  };
+
+  // ─── Darstellung ────────────────────────────────────────────────────────────
 
   const remember = {
     get() { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } },
@@ -64,8 +114,8 @@
   class TalkItOver extends HTMLElement {
     connectedCallback() {
       const root = this.attachShadow({ mode: "open" });
-      const label = this.getAttribute("label") || "Let's talk it over";
-      const ids = (this.getAttribute("providers") || "claude,chatgpt,copy")
+      const label = this.getAttribute("label") || DEFAULTS.label;
+      const ids = (this.getAttribute("providers") || Object.keys(providers).join(","))
         .split(",").map((s) => s.trim()).filter((id) => providers[id]);
 
       root.innerHTML = `<style>${STYLE}</style>
@@ -104,9 +154,10 @@
     }
 
     prompt() {
-      const url = this.getAttribute("url") || location.href;
-      const tpl = this.getAttribute("prompt") || "Load {url} and talk it over with me. Cite what you use.";
-      return tpl.replaceAll("{url}", url);
+      return buildPrompt(
+        this.getAttribute("prompt") || DEFAULTS.prompt,
+        this.getAttribute("url") || location.href
+      );
     }
 
     toggle(open = this.$menu.hidden) {
@@ -119,18 +170,22 @@
     }
 
     async run(id) {
-      const p = providers[id];
-      if (p.copy) {
-        try { await navigator.clipboard.writeText(this.prompt()); }
-        catch { window.prompt("Copy this prompt:", this.prompt()); return; }
-        this.$label.textContent = "Prompt copied";
-        setTimeout(() => this.refreshLabel(), 2000);
-        return;
+      const prompt = this.prompt();
+      if (providers[id].copy) return this.handOver(prompt, "Prompt copied");
+      if (needsClipboardFallback(id, prompt)) {
+        return this.handOver(prompt, "Too long for a link — prompt copied");
       }
-      window.open(p.url(encodeURIComponent(this.prompt())), "_blank", "noopener,noreferrer");
+      window.open(providerUrl(id, prompt), "_blank", "noopener,noreferrer");
+    }
+
+    async handOver(prompt, note) {
+      try { await navigator.clipboard.writeText(prompt); }
+      catch { window.prompt("Copy this prompt:", prompt); return; }
+      this.$label.textContent = note;
+      setTimeout(() => this.refreshLabel(), 2000);
     }
   }
 
   customElements.define("talk-it-over", TalkItOver);
-  window.TalkItOver = { providers };
+  window.TalkItOver = api;
 })();

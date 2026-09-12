@@ -1,0 +1,10 @@
+{
+  "name": "talkitover",
+  "version": "1.0.0",
+  "description": "Hand a page to the reader's own LLM.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
