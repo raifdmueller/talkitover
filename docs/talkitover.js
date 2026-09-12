@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.4 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.5 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.4";
+  const VERSION = "1.0.5";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -28,8 +28,8 @@
    * The number is a conservative guess until Spike #9 measures the real one. */
   const MAX_URL_LENGTH = 6000;
 
-  /* Der Leser sieht einen Button, den er nicht kennt. Ein Eintrag im Menü führt
-   * dorthin, wo erklärt steht, was beim Klick passiert — und was nicht. */
+  /* The reader meets a button nobody explained. One entry in the menu leads to
+   * the page that says what a click does — and what it does not. */
   const ABOUT_URL = "https://raifdmueller.github.io/talkitover/";
 
   const DEFAULTS = {
@@ -45,8 +45,8 @@
 
   // ─── Logik ──────────────────────────────────────────────────────────────────
 
-  /* Das LLM bekommt nur den Prompt-Text. Ein Pfad ohne Host ist dort wertlos —
-   * also wird jede Referenz gegen die Seite aufgelöst, bevor sie hinausgeht. */
+  /* The LLM receives the prompt text and nothing else. A path without a host is
+   * worthless there, so every reference is resolved against the page first. */
   function absoluteUrl(reference, base) {
     const page = base || (typeof location === "undefined" ? undefined : location.href);
     try {
@@ -65,7 +65,7 @@
       .split(",")
       .map((id) => id.trim())
       .filter((id) => providers[id]);
-    // Ein Provider, zweimal genannt, ergab zwei gleiche Einträge im Menü.
+    // One provider named twice used to produce two identical menu entries.
     return [...new Set(ids)];
   }
 
@@ -201,7 +201,7 @@
         b.setAttribute("aria-checked", String(b.dataset.id === current)));
       this.$menu.hidden = !open;
       this.$more.setAttribute("aria-expanded", String(open));
-      // Ein providers-Attribut aus lauter unbekannten IDs lässt das Menü leer.
+      // A providers attribute of unknown ids only leaves the menu empty.
       if (open) this.$menu.querySelector("button")?.focus();
     }
 
