@@ -10,6 +10,16 @@ STEP 1 — Check the preconditions.
 
   Either one missing -> STOP. Name which one, and that Recipe 0 does not apply.
 
+  Then look at what the index actually is. An index is a LIST OF LINKS: one
+  entry per page, each with a URL. A file that carries the whole site as full
+  text is a dump, not an index — every LLM truncates it and then answers from
+  whatever happened to fit. Sites often name such a file llms.txt anyway; the
+  convention reserves that name for the index and llms-full.txt for the dump.
+
+  Dump instead of index -> the per-page buttons still work, they point at single
+  pages. A catalog button (STEP 5) does not: say so, and leave it out rather
+  than pointing it at the dump.
+
 STEP 2 — Check the Definition of Done (this is the step that protects the
 maintainer, do not skip it).
 
@@ -47,6 +57,10 @@ STEP 5 — Fetch the content-type prompt.
 
     reference  Pages people look things up in — anchors, glossaries, templates.
                https://raifdmueller.github.io/talkitover/prompts/referenz.md
+
+    catalog    Index pages: llms.txt by the convention, tables of contents,
+               term lists. Only when the index is a list of links (STEP 1).
+               https://raifdmueller.github.io/talkitover/prompts/katalog.md
 
   Fetch that file and take the content of its FIRST fenced code block, verbatim,
   as the prompt attribute. Write the version from its header into data-prompt,
