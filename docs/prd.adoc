@@ -1,0 +1,126 @@
+= TalkItOver – PRD v0.1
+:toc: left
+:toclevels: 2
+:sectnums:
+:icons: font
+
+Stand: 2026-09-12 · Status: Entwurf, Entscheidungen für Version 1 getroffen
+
+== Problem
+
+Websites mit tiefem Inhalt – Podcast-Transcripts, Doku, Templates – sind für Leser mit eigenem LLM schlecht erreichbar. Wer eine Folge oder eine Doku-Seite mit Claude besprechen will, muss Inhalte kopieren, URLs raten oder scheitert an JavaScript-gerenderten Seiten. Betreiber, die das ändern wollen, müssten ein LLM hosten (Kosten, Missbrauch) oder ihre Inhalte per Hand LLM-lesbar aufbereiten.
+
+== Lösung in einem Satz
+
+Ein Toolkit, mit dem ein Betreiber seine Site in einem Claude-Code-Lauf „talkable" macht: LLM-lesbare Inhalte, ein Index, ein Button – und ein Generator, der das ohne LLM aktuell hält.
+
+== Ziele
+
+[cols="1,3"]
+|===
+| Z1 | Vier Sites sind talkable: Semantic Anchors (eigenes Repo, Skeleton), arc42.org, doctoolchain.org, software-architektur.tv – jeweils per PR ins Original-Repo.
+| Z2 | Ein Betreiber macht seine Jekyll- oder docToolchain-Site ohne Rückfrage an uns talkable.
+| Z3 | Kein LLM-erzeugter Content im Repo. Das LLM erzeugt Generatoren; der Build erzeugt Content.
+|===
+
+== Personen
+
+Betreiber:: Pflegt eine Open-Source-Site, hat Claude Code, kann PRs reviewen. Will Wirkung ohne Betrieb.
+Leser:: Kommt über die Site, hat einen eigenen LLM-Account. Will eine Folge oder Seite besprechen, nicht zusammenfassen lassen.
+Claude Code:: Führt das Rezept aus. Hat Datei- und Git-Zugriff, kein Urteil über Lizenz und Merge.
+
+== Entscheidungen für Version 1
+
+[cols="1,2,3"]
+|===
+| # | Entscheidung | Begründung
+
+| E1
+| *Definition of Done des Rezepts:* Regeneration läuft ohne LLM. Generator-Script plus Einbau in den bestehenden Build (GitHub Action bei Jekyll, Task bei docToolchain). Sites, bei denen das nicht gelingt, sind in V1 nicht unterstützt.
+| LLM-Content veraltet mit dem nächsten Commit. Generatoren nicht. Ausnahme: Sites, deren Inhalt schon LLM-lesbar ist (reines Markdown) – dort reduziert sich DoD auf Index und Button.
+
+| E2
+| *Ein Einstiegs-Prompt, ein Rezept pro Generator.* Der Prompt erkennt den Generator und lädt das passende Rezept von der Hub-Site. Unbekannter Generator → Abbruch mit Begründung, kein Improvisieren. V1: Rezept 0 „schon LLM-lesbar" (Site hat `llms.txt` und Quelltexte als Markdown/AsciiDoc – nur Button einbauen; generatorunabhängig), Jekyll (arc42.org, software-architektur.tv), docToolchain.
+| Getestete Rezepte sind reproduzierbar; ein generischer Prompt ist es nicht. Der Prompt selbst dogfoodet das Konzept: er lädt seine Anleitung per URL.
+
+| E3
+| *Button-Prompts pro Content-Typ liefert die Hub-Site.* V1: Transcript („belege mit Timestamp"), Doku-Seite („frag nach meiner Situation, antworte als How-to"), Referenz/Template („antworte knapp, verweise auf den Abschnitt"). Das Rezept wählt den Typ; der Betreiber kann per `prompt`-Attribut überschreiben.
+| Die Diátaxis-Logik lebt an einer Stelle. Betreiber müssen sie nicht kennen.
+
+| E4
+| *Original statt Kopie, wo möglich.* Der Button zeigt auf Original-Content, wenn der als statischer Text abrufbar ist. Abgeleiteter Content nur, wenn der Generator im Build hängt (E1). Abgeleiteter Content lebt im Original-Repo unter dessen Lizenz.
+| Kopien driften und werfen Lizenzfragen auf.
+
+| E5
+| *Demo = Fork-Preview, nicht Companion.* Bis ein PR gemerged ist, zeigt die Hub-Site auf die GitHub Page des Forks, klar als Preview markiert. Nach dem Merge wird der Fork gelöscht.
+| Ein dauerhafter Companion ist ein Fork, der driftet.
+
+| E6
+| *`talkitover.js` wird vendored, nicht per CDN geladen.* Jede Site bekommt eine Kopie mit Versionsnummer im Header.
+| Keine Laufzeitabhängigkeit von der Hub-Site, keine Tracking-Frage. Updates kommen als PR vom Rezept.
+
+| E7
+| *Hub-Site ist Jekyll auf GitHub Pages.* Sie wird mit dem eigenen Jekyll-Rezept talkable gemacht.
+| Null Betrieb, und die Hub-Site ist der erste Test des ersten Rezepts.
+
+| E8
+| *Provider V1:* Claude, ChatGPT, „copy the prompt". Weitere über `TalkItOver.providers`.
+| Die zwei größten plus ein Ausweg für lokale und Firmen-LLMs.
+|===
+
+== Impact Map
+
+Ziel:: In 8 Wochen drei Sites talkable (Z1), ein fremder Betreiber hat das Rezept erfolgreich ausgeführt (Z2).
+
+* *Betreiber* – versteht in 5 Minuten, was er bekommt → Konzept-Seite mit Live-Button; führt den Prompt ohne Rückfrage aus → Einstiegs-Prompt, Rezepte Jekyll und docToolchain; merged mit gutem Gefühl → PR mit Generator, Action, Beispiel-Output, keine Content-Blobs.
+* *Leser* – findet den Button → Button-Position im Rezept festgelegt (bei Titel/Metadaten); bekommt ein Gespräch, keine Zusammenfassung → Content-Typ-Prompts (E3).
+* *Claude Code* – scheitert laut statt leise → Rezept mit Abbruchkriterien; erzeugt keine Content-Blobs → DoD (E1) als Prüfschritt im Rezept.
+
+== Story Map
+
+Rückgrat der Betreiber-Reise, darunter die erste Scheibe (Walking Skeleton):
+
+[cols="1,1,1,1,1,1"]
+|===
+| Entdecken | Verstehen | Rezept ausführen | PR reviewen | Mergen | Leser klickt
+
+| Link von Semantic Anchors zur Hub-Site
+| Konzept-Seite mit einem Live-Button auf den Anchor „Diátaxis Framework"
+| Einstiegs-Prompt + Rezept 0, angewendet auf Semantic Anchors (hat `llms.txt`, AsciiDoc-Quellen, gescripteten Build)
+| PR enthält Button in der Anchor-Seite und den Content-Typ-Prompt „Referenz"; kein Generator nötig
+| Entfällt – eigenes Repo
+| Button öffnet Claude mit dem Anchor als Referenz, Gespräch statt Zusammenfassung
+|===
+
+Spätere Scheiben, nach Risiko geordnet: arc42.org (Jekyll-Rezept, erster fremder PR) · docToolchain-Rezept mit doctoolchain.org (Export als docToolchain-Task – größter Hebel) · Galerie auf der Hub-Site · Rezept als Claude-Code-Plugin (Semantic Anchors hat die Plugin-Struktur schon) · software-architektur.tv erst nach einem Spike zur Sprechererkennung (WhisperX/pyannote, timeboxed 1 Tag).
+
+== Scope
+
+Must:: Hub-Site mit Konzept-Seite und Live-Button · Einstiegs-Prompt · Rezept 0 · Content-Typ-Prompt „Referenz" · `talkitover.js` v1 · Button auf Semantic Anchors
+Should:: Jekyll-Rezept · arc42.org-PR · docToolchain-Rezept · Content-Typ-Prompts „Doku-Seite", „Transcript" · Galerie
+Could:: Rezept als Claude-Code-Plugin · Spike Sprechererkennung · Kapitel-Splitting der Transcripts · weitere Provider
+Won't (V1):: MCP-Server · Volltextsuche · gehostetes LLM · Companion-Pages auf Dauer · Antora, Hugo, MkDocs
+
+== Erfolgskriterien
+
+* Rezept läuft auf frischem Clone von Semantic Anchors bis zum fertigen PR ohne manuelle Eingriffe außer Review – gemessen: ein Lauf, protokolliert. Dasselbe später für arc42.org mit dem Jekyll-Rezept.
+* Regeneration läuft in CI ohne LLM – gemessen: neue Folge gepusht, `NNN.md` und `llms.txt` erscheinen ohne menschliches Zutun.
+* Drei PRs eröffnet, mindestens einer gemerged.
+* Ein Betreiber außerhalb des Teams führt das Rezept aus und meldet Ergebnis – Erfolg oder Abbruchmeldung, beides zählt als Signal.
+
+== Offene Fragen
+
+Product Owner::
+* Name und Domain der Hub-Site.
+* Lizenz für `talkitover.js` und die Rezepte (MIT?).
+Architect::
+* Erkennt der Einstiegs-Prompt den Generator selbst (Dateien im Repo) oder fragt er den Betreiber? Vorschlag: erkennen, bei Mehrdeutigkeit fragen.
+* Wo liegen die Content-Typ-Prompts – im Rezept eingebettet oder als eigene URL, die das Rezept lädt?
+Developer::
+* Welches Repo baut doctoolchain.org, und liefert docToolchain schon einen Markdown-Export?
+* Verhalten von `chatgpt.com/?q=` verifizieren.
+Domain Expert::
+* Reicht für arc42.org der Content-Typ „Referenz", oder braucht das Template einen eigenen Prompt?
+* Semantic Anchors: Soll der Button-Prompt die eigenen Anchors nutzen („Socratic Method", „Feynman Technique"), also lehren statt erklären?
+Operations::
+* Keine offenen Fragen – V1 hat keinen Betrieb.
