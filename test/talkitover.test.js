@@ -158,3 +158,75 @@ test('#10 Das Label wird als Text gesetzt, nicht als Markup eingesetzt', () => {
   assert.ok(!template.includes('${label}'), 'kein Label im innerHTML-Template')
   assert.ok(/\.textContent = label/.test(src), 'Label wird über textContent gesetzt')
 })
+
+/* Invarianten von providerIds. Die Beispiele oben sagen, was bei vier Eingaben
+ * herauskommt; diese Tests sagen, was für jede Eingabe gelten muss. Genau so
+ * fällt auf, dass eine doppelte ID zweimal im Menü landet — ein Beispieltest
+ * hätte den Fall erst gefunden, wenn jemand ihn aufgeschrieben hätte. */
+const PROVIDER_ATTRIBUTES = [
+  null,
+  undefined,
+  '',
+  'claude',
+  'copy,claude',
+  'claude,chatgpt,copy',
+  ' claude , copy ',
+  'claude,foo',
+  'foo,bar',
+  'claude,,copy',
+  'claude,claude',
+  'copy,claude,copy,chatgpt',
+  'CLAUDE',
+  'claude;copy',
+]
+
+test('#10 Invariante: jede zurückgegebene ID ist ein bekannter Provider', () => {
+  const { api } = load()
+  const known = Object.keys(api.providers)
+  for (const attribute of PROVIDER_ATTRIBUTES) {
+    for (const id of api.providerIds(attribute)) {
+      assert.ok(known.includes(id), `${attribute}: ${id} ist kein Provider`)
+    }
+  }
+})
+
+test('#10 Invariante: die Reihenfolge des Attributs bleibt erhalten', () => {
+  const { api } = load()
+  for (const attribute of PROVIDER_ATTRIBUTES) {
+    if (attribute == null || attribute === '') continue
+    const wanted = String(attribute).split(',').map((id) => id.trim())
+    const got = [...api.providerIds(attribute)]
+
+    let position = -1
+    for (const id of got) {
+      const next = wanted.indexOf(id, position + 1)
+      assert.ok(next > position, `${attribute}: ${id} steht nicht in der Reihenfolge des Attributs`)
+      position = next
+    }
+  }
+})
+
+test('#10 Invariante: kein Provider steht zweimal im Menü', () => {
+  const { api } = load()
+  for (const attribute of PROVIDER_ATTRIBUTES) {
+    const got = [...api.providerIds(attribute)]
+    assert.deepEqual(got, [...new Set(got)], `${attribute}: doppelte ID`)
+  }
+})
+
+test('#10 Invariante: ohne Attribut gilt genau die Provider-Liste', () => {
+  const { api } = load()
+  const known = Object.keys(api.providers)
+  for (const nothing of [null, undefined, '']) {
+    assert.deepEqual([...api.providerIds(nothing)], known)
+  }
+})
+
+test('#10 Invariante: das Ergebnis übersteht den zweiten Durchlauf unverändert', () => {
+  const { api } = load()
+  for (const attribute of PROVIDER_ATTRIBUTES) {
+    const once = [...api.providerIds(attribute)]
+    if (once.length === 0) continue
+    assert.deepEqual([...api.providerIds(once.join(','))], once, `${attribute}: nicht idempotent`)
+  }
+})

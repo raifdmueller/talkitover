@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.1 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.2 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.1";
+  const VERSION = "1.0.2";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -46,10 +46,12 @@
   }
 
   function providerIds(attribute) {
-    return String(attribute || Object.keys(providers).join(","))
+    const ids = String(attribute || Object.keys(providers).join(","))
       .split(",")
       .map((id) => id.trim())
       .filter((id) => providers[id]);
+    // Ein Provider, zweimal genannt, ergab zwei gleiche Einträge im Menü.
+    return [...new Set(ids)];
   }
 
   function providerUrl(id, prompt) {
