@@ -21,6 +21,8 @@ function load() {
     document: { addEventListener() {} },
     navigator: {},
     setTimeout,
+    // Der vm-Kontext bringt keine Web-Globals mit; im Browser sind sie da.
+    URL,
   }
   sandbox.window = sandbox
   vm.runInNewContext(src, sandbox)
@@ -229,4 +231,64 @@ test('#10 Invariante: das Ergebnis übersteht den zweiten Durchlauf unverändert
     if (once.length === 0) continue
     assert.deepEqual([...api.providerIds(once.join(','))], once, `${attribute}: nicht idempotent`)
   }
+})
+
+/* Ein LLM bekommt nur den Prompt-Text. Ein Pfad wie /Semantic-Anchors/llms.txt
+ * hat für den keinen Host, gegen den er auflösen könnte — die Seite, die der
+ * Betreiber meint, ist für das LLM unerreichbar. Gefunden am Katalog-Button von
+ * Semantic Anchors, der BASE_URL ins url-Attribut schrieb. */
+const PAGE = 'https://llm-coding.github.io/Semantic-Anchors/'
+
+test('#10 Ein wurzelrelativer Pfad wird zur vollständigen URL', () => {
+  const { api } = load()
+  assert.equal(
+    api.absoluteUrl('/Semantic-Anchors/llms-index.txt', PAGE),
+    'https://llm-coding.github.io/Semantic-Anchors/llms-index.txt'
+  )
+})
+
+test('#10 Ein relativer Pfad wird gegen die Seite aufgelöst', () => {
+  const { api } = load()
+  assert.equal(
+    api.absoluteUrl('docs/anchors/4mat.adoc', PAGE),
+    'https://llm-coding.github.io/Semantic-Anchors/docs/anchors/4mat.adoc'
+  )
+})
+
+test('#10 Eine vollständige URL bleibt, wie sie ist', () => {
+  const { api } = load()
+  const absolute = 'https://raw.githubusercontent.com/org/repo/main/a.adoc'
+  assert.equal(api.absoluteUrl(absolute, PAGE), absolute)
+})
+
+test('#10 Ohne url-Attribut ist die Seite selbst die Referenz', () => {
+  const { api } = load()
+  assert.equal(api.absoluteUrl(null, PAGE), PAGE)
+  assert.equal(api.absoluteUrl('', PAGE), PAGE)
+})
+
+test('#10 Invariante: was der Prompt nennt, ist immer eine auflösbare URL', () => {
+  const { api } = load()
+  const references = [
+    null,
+    '',
+    '/Semantic-Anchors/llms-index.txt',
+    'docs/anchors/4mat.adoc',
+    './relative.md',
+    '../eine-ebene-hoeher.md',
+    'https://example.org/a.md',
+    'http://example.org/b.md?q=1#teil',
+    '//example.org/schemalos.md',
+  ]
+  for (const reference of references) {
+    const url = api.absoluteUrl(reference, PAGE)
+    assert.ok(/^https?:\/\//.test(url), `${reference} ergab keine vollständige URL: ${url}`)
+    assert.equal(new URL(url).href, url, `${reference} ist nicht normalisiert`)
+  }
+})
+
+test('#10 Der Prompt trägt die aufgelöste URL, nicht den Pfad', () => {
+  const { api } = load()
+  const prompt = api.buildPrompt('Load {url}.', api.absoluteUrl('/a/b.txt', PAGE))
+  assert.equal(prompt, 'Load https://llm-coding.github.io/a/b.txt.')
 })

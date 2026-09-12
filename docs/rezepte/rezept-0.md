@@ -51,6 +51,12 @@ STEP 4 — Place the button.
   the raw file in the upstream repository, or the published text file. If the
   site is a fork, use the upstream URL.
 
+  Write it as a full URL with scheme and host. The reader's LLM receives nothing
+  but the prompt text: a path like /docs/page.md has no host to resolve against,
+  so the page you mean is unreachable for it. talkitover.js resolves a relative
+  url against the current page, which saves the case where a template has no
+  choice — but a build that knows the site's address should write it out.
+
 STEP 5 — Fetch the content-type prompt.
 
   Pick the type that matches the page:

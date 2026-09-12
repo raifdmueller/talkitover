@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.2 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.3 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.2";
+  const VERSION = "1.0.3";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -40,6 +40,17 @@
   };
 
   // ─── Logik ──────────────────────────────────────────────────────────────────
+
+  /* Das LLM bekommt nur den Prompt-Text. Ein Pfad ohne Host ist dort wertlos —
+   * also wird jede Referenz gegen die Seite aufgelöst, bevor sie hinausgeht. */
+  function absoluteUrl(reference, base) {
+    const page = base || (typeof location === "undefined" ? undefined : location.href);
+    try {
+      return new URL(reference || page, page).href;
+    } catch {
+      return reference || page || "";
+    }
+  }
 
   function buildPrompt(template, url) {
     return String(template).replaceAll("{url}", url);
@@ -70,6 +81,7 @@
     providers,
     defaults: DEFAULTS,
     maxUrlLength: MAX_URL_LENGTH,
+    absoluteUrl,
     buildPrompt,
     providerIds,
     providerUrl,
@@ -168,7 +180,7 @@
     prompt() {
       return buildPrompt(
         this.getAttribute("prompt") || DEFAULTS.prompt,
-        this.getAttribute("url") || location.href
+        absoluteUrl(this.getAttribute("url"))
       );
     }
 
