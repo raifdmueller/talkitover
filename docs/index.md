@@ -37,7 +37,7 @@ deinem Repo:
 
 | Im PR | Nicht im PR |
 |---|---|
-| Ein Button an Titel und Metadaten deiner Seiten | Kein vom LLM geschriebener Fließtext |
+| Ein Button, der deiner Leserschaft den Index deiner Site übergibt | Kein vom LLM geschriebener Fließtext |
 | `talkitover.js`, kopiert in dein Repo, MIT | Keine Laufzeitabhängigkeit von dieser Site |
 | Bei Bedarf ein Generator plus Build-Schritt | Kein gehostetes LLM, kein API-Key |
 

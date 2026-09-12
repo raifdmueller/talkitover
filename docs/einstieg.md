@@ -2,8 +2,8 @@ TalkItOver — entry prompt (v1)
 Copy everything below into Claude Code, inside the repository of your site.
 --------------------------------------------------------------------------
 
-Make this repository "talkable": readers get a button that hands a page to
-their own LLM. Work through the steps in order. Do not improvise, and do not
+Make this repository "talkable": readers get one button that hands the site's
+index to their own LLM, so it can fetch whatever their question needs. Work through the steps in order. Do not improvise, and do not
 write content — you produce buttons and generators, the build produces content.
 
 STEP 1 — Detect the generator yourself.
