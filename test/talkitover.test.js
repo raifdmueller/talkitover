@@ -108,3 +108,53 @@ test('#10 Die vendored Kopie nennt Version und Lizenz im Header', () => {
   assert.ok(header.includes(api.version), `Header nennt Version ${api.version}`)
   assert.ok(header.includes('MIT'), 'Header nennt die Lizenz')
 })
+
+/* Grenzwerte der Clipboard-Entscheidung, für jeden Provider, der eine URL baut.
+ * Die Invariante oben prüft, DASS die Entscheidung genau einmal kippt; hier steht,
+ * WO sie kippt: bei maxUrlLength ist die URL noch gültig, ein Zeichen mehr nicht. */
+test('#10 Die Clipboard-Grenze liegt genau bei maxUrlLength', () => {
+  const { api } = load()
+  for (const id of ['claude', 'chatgpt']) {
+    const overhead = api.providerUrl(id, '').length
+    const fits = 'x'.repeat(api.maxUrlLength - overhead)
+
+    assert.equal(api.providerUrl(id, fits).length, api.maxUrlLength)
+    assert.equal(api.needsClipboardFallback(id, fits), false, `${id}: genau auf der Grenze`)
+    assert.equal(api.needsClipboardFallback(id, fits.slice(1)), false, `${id}: eins darunter`)
+    assert.equal(api.needsClipboardFallback(id, fits + 'x'), true, `${id}: eins darüber`)
+  }
+})
+
+test('#10 copy kennt keine Grenze — es gibt keine URL, die zu lang werden könnte', () => {
+  const { api } = load()
+  assert.equal(api.needsClipboardFallback('copy', 'x'.repeat(api.maxUrlLength * 2)), false)
+})
+
+/* Ein providers-Attribut mit lauter unbekannten IDs ergab eine leere Liste, und
+ * das Öffnen des Menüs griff dann auf einen Button zu, den es nicht gab. */
+test('#10 Unbekannte Provider-IDs ergeben eine leere Liste, keinen Absturz', () => {
+  const { api, src } = load()
+
+  // Die Arrays entstehen im vm-Kontext; erst kopieren, sonst vergleicht
+  // deepEqual auch den Prototyp aus dem anderen Realm.
+  const ids = (attribute) => [...api.providerIds(attribute)]
+
+  assert.deepEqual(ids('foo,bar'), [])
+  assert.deepEqual(ids('claude,foo'), ['claude'])
+  assert.deepEqual(ids(null), ['claude', 'chatgpt', 'copy'])
+  assert.deepEqual(ids(' claude , copy '), ['claude', 'copy'])
+
+  assert.ok(
+    !/querySelector\("button"\)\.focus\(\)/.test(src),
+    'der Fokus-Aufruf prüft, ob es einen Button gibt'
+  )
+})
+
+/* Das Label kam als Attribut herein und ging ungefiltert in innerHTML. */
+test('#10 Das Label wird als Text gesetzt, nicht als Markup eingesetzt', () => {
+  const { src } = load()
+  const template = src.slice(src.indexOf('root.innerHTML'), src.indexOf('this.$main ='))
+
+  assert.ok(!template.includes('${label}'), 'kein Label im innerHTML-Template')
+  assert.ok(/\.textContent = label/.test(src), 'Label wird über textContent gesetzt')
+})
