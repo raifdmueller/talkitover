@@ -21,7 +21,7 @@ LLM – den Originaltext, nicht eine Kopie.
 
 <div class="actions">
 <talk-it-over
-  url="https://raw.githubusercontent.com/LLM-Coding/Semantic-Anchors/main/docs/anchors/diataxis-framework.adoc"
+  url="https://llm-coding.github.io/Semantic-Anchors/docs/anchors/diataxis-framework.adoc"
   prompt="Load {url}. It is a reference page, and I want to use it — not have it summarised.&#10;&#10;Ask me what I am trying to look up before you answer anything.&#10;&#10;Then keep your answers short and name the section you took them from. If the page does not cover what I ask, say so instead of filling the gap from memory."
   data-prompt="referenz@1"
   label="Let's talk it over"></talk-it-over>
