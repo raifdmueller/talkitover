@@ -292,3 +292,27 @@ test('#10 Der Prompt trägt die aufgelöste URL, nicht den Pfad', () => {
   const prompt = api.buildPrompt('Load {url}.', api.absoluteUrl('/a/b.txt', PAGE))
   assert.equal(prompt, 'Load https://llm-coding.github.io/a/b.txt.')
 })
+
+/* Wer den Button zum ersten Mal sieht, soll nachlesen können, was da gerade
+ * passiert — ohne dass der Betreiber das erklären muss. */
+test('#10 Das Menü führt zur Hub-Site', () => {
+  const { api, src } = load()
+
+  assert.equal(api.aboutUrl, 'https://raifdmueller.github.io/talkitover/')
+
+  const menu = src.slice(src.indexOf('<div class="menu"'), src.indexOf('this.$main ='))
+  assert.ok(menu.includes('${api.aboutUrl}'), 'der Eintrag verlinkt die Hub-Site')
+  assert.ok(/rel="noopener noreferrer"/.test(menu), 'der Link gibt den opener nicht weiter')
+  assert.ok(/target="_blank"/.test(menu), 'der Link öffnet einen neuen Tab')
+})
+
+test('#10 Der Eintrag "About" ist kein Provider', () => {
+  const { api } = load()
+
+  assert.equal(api.providers.about, undefined)
+  assert.deepEqual([...api.providerIds('about')], [])
+  assert.ok(
+    ![...api.providerIds(null)].includes('about'),
+    'die Voreinstellung führt nur Provider'
+  )
+})

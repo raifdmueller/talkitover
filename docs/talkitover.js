@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.3 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.4 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.3";
+  const VERSION = "1.0.4";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -27,6 +27,10 @@
    * silently. Beyond it the prompt goes to the clipboard instead.
    * The number is a conservative guess until Spike #9 measures the real one. */
   const MAX_URL_LENGTH = 6000;
+
+  /* Der Leser sieht einen Button, den er nicht kennt. Ein Eintrag im Menü führt
+   * dorthin, wo erklärt steht, was beim Klick passiert — und was nicht. */
+  const ABOUT_URL = "https://raifdmueller.github.io/talkitover/";
 
   const DEFAULTS = {
     label: "Let's talk it over",
@@ -78,6 +82,7 @@
 
   const api = {
     version: VERSION,
+    aboutUrl: ABOUT_URL,
     providers,
     defaults: DEFAULTS,
     maxUrlLength: MAX_URL_LENGTH,
@@ -129,6 +134,10 @@
     .menu button { border: 0; border-radius: 6px; width: 100%; justify-content: flex-end;
       white-space: nowrap; background: transparent; gap: .6em; }
     .menu button:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
+    .about { display: block; padding: .45em .6em; margin-top: 4px; text-align: right;
+      border-top: 1px solid var(--tio-border, color-mix(in srgb, currentColor 20%, transparent));
+      color: inherit; opacity: .7; text-decoration: none; font-size: .9em; white-space: nowrap; }
+    .about:hover, .about:focus-visible { opacity: 1; text-decoration: underline; }
     .menu svg { visibility: hidden; }
     .menu button[aria-checked="true"] svg { visibility: visible; }
   `;
@@ -147,6 +156,8 @@
         <div class="menu" role="menu" hidden>
           ${ids.map((id) => `<button type="button" role="menuitemradio" data-id="${id}" aria-checked="false">
             ${CHECK}<span>… ${providers[id].name}</span></button>`).join("")}
+          <a class="about" role="menuitem" href="${api.aboutUrl}"
+            target="_blank" rel="noopener noreferrer">About TalkItOver</a>
         </div>`;
 
       this.$main = root.querySelector(".main");
