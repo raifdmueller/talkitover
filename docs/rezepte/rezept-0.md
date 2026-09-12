@@ -1,24 +1,35 @@
-TalkItOver — Recipe 0: "already LLM-readable" (v1)
+TalkItOver — Recipe 0: "already LLM-readable" (v2)
 Applies when the sources are Markdown or AsciiDoc and the index comes from the
-build. Nothing is generated here — you add an index reference and a button.
+build. Nothing is generated here — you add ONE button that hands the site's
+index to the reader's own LLM.
+
+One button, not one per page. A button on a single page hands over that page and
+nothing else: the reader's LLM then knows one section of your site and cannot
+know the rest exists. The index lets it fetch whatever the question needs.
 
 STEP 1 — Check the preconditions.
 
   a) Sources are plain Markdown or AsciiDoc and reachable as static text
      (raw file URL or published text file).
-  b) An index exists: llms.txt, or an equivalent list of the content.
+  b) An index exists: llms.txt by the convention, or an equivalent file.
 
   Either one missing -> STOP. Name which one, and that Recipe 0 does not apply.
 
-  Then look at what the index actually is. An index is a LIST OF LINKS: one
-  entry per page, each with a URL. A file that carries the whole site as full
-  text is a dump, not an index — every LLM truncates it and then answers from
-  whatever happened to fit. Sites often name such a file llms.txt anyway; the
-  convention reserves that name for the index and llms-full.txt for the dump.
+  Then look at what the index actually IS. An index is a LIST OF LINKS: one
+  entry per page, each with a URL, and no definitions. A file that carries the
+  whole site as full text is a dump — every LLM truncates it and then answers
+  from whatever happened to fit, confidently. Sites often name such a file
+  llms.txt anyway; the convention reserves that name for the index and
+  llms-full.txt for the dump.
 
-  Dump instead of index -> the per-page buttons still work, they point at single
-  pages. A catalog button (STEP 5) does not: say so, and leave it out rather
-  than pointing it at the dump.
+  Dump instead of index -> STOP. Say that the site has a full-text file but no
+  index, that a button pointing at it would mislead the reader, and that the
+  generator recipes (Jekyll, docToolchain) can produce one. Change nothing.
+
+  Then check the index COVERS the site: documentation, reference pages,
+  whatever else is published — not one section of it. An index listing only the
+  glossary promises a conversation about the site and delivers a corner of it.
+  Incomplete -> say which parts are missing before you go on.
 
 STEP 2 — Check the Definition of Done (this is the step that protects the
 maintainer, do not skip it).
@@ -27,7 +38,7 @@ maintainer, do not skip it).
   package.json scripts, a Makefile target, a CI workflow step.
 
   Produced by the build  -> continue.
-  Maintained by hand     -> STOP. Say: "llms.txt is maintained by hand. A
+  Maintained by hand     -> STOP. Say: "The index is maintained by hand. A
                             button would go stale with the next commit.
                             This site needs a generator, which Recipe 0 does
                             not provide." Change nothing.
@@ -39,38 +50,31 @@ STEP 3 — Vendor talkitover.js.
   comment intact — it carries the version and the MIT licence. Do not load the
   file from a CDN or from the hub site at runtime.
 
-STEP 4 — Place the button.
+STEP 4 — Place the one button.
 
-  One button per content page, at the title or the metadata line — where the
-  reader looks before deciding to read. Not in a footer, not floating.
+  Where a reader arrives and decides what to do: the start page, near the
+  headline, or in a header that every page shares. Not in a footer, not
+  floating.
 
   <script src="PATH/talkitover.js"></script>
-  <talk-it-over url="URL-OF-THE-SOURCE-TEXT" prompt="..." data-prompt="TYPE@VERSION"></talk-it-over>
+  <talk-it-over url="FULL-URL-OF-THE-INDEX" prompt="..." data-prompt="katalog@1"></talk-it-over>
 
-  The url attribute points at the ORIGINAL source text, not at a copy you made:
-  the raw file in the upstream repository, or the published text file. If the
-  site is a fork, use the upstream URL.
+  The url attribute names the index by a FULL URL with scheme and host. The
+  reader's LLM receives nothing but the prompt text: a path like /llms.txt has
+  no host to resolve against, so the file is unreachable for it. talkitover.js
+  resolves a relative url against the current page, which saves the case where a
+  template has no choice — but a build that knows its own address writes it out.
 
-  Write it as a full URL with scheme and host. The reader's LLM receives nothing
-  but the prompt text: a path like /docs/page.md has no host to resolve against,
-  so the page you mean is unreachable for it. talkitover.js resolves a relative
-  url against the current page, which saves the case where a template has no
-  choice — but a build that knows the site's address should write it out.
+  If the site is a fork, use the upstream address.
 
 STEP 5 — Fetch the content-type prompt.
 
-  Pick the type that matches the page:
+  The site button hands over an index, so the type is:
 
-    reference  Pages people look things up in — anchors, glossaries, templates.
-               https://raifdmueller.github.io/talkitover/prompts/referenz.md
-
-    catalog    Index pages: llms.txt by the convention, tables of contents,
-               term lists. Only when the index is a list of links (STEP 1).
-               https://raifdmueller.github.io/talkitover/prompts/katalog.md
+    catalog    https://raifdmueller.github.io/talkitover/prompts/katalog.md
 
   Fetch that file and take the content of its FIRST fenced code block, verbatim,
-  as the prompt attribute. Write the version from its header into data-prompt,
-  for example data-prompt="referenz@1".
+  as the prompt attribute. Write the version from its header into data-prompt.
 
   Put the prompt on ONE physical line and write its line breaks as &#10; — a
   blank line inside an HTML attribute ends the HTML block in most Markdown
@@ -80,13 +84,18 @@ STEP 5 — Fetch the content-type prompt.
   If the maintainer has already set a prompt attribute, leave the text alone and
   set data-prompt="custom". A later update must not overwrite their wording.
 
+  A maintainer who wants per-page buttons in addition can use the "reference"
+  type (prompts/referenz.md). Do not add them on your own: they multiply across
+  every page and hand over a fragment each.
+
 STEP 6 — Check your own work, then open the pull request.
 
   Before committing, verify:
-    [ ] The diff contains buttons, the vendored file, and nothing else.
+    [ ] The diff contains one button, the vendored file, and nothing else.
     [ ] No file contains prose you wrote. No summaries, no generated
         descriptions, no "About this page".
-    [ ] Every button's url resolves to text (fetch one and look).
+    [ ] The button's url resolves to the index (fetch it and look), and the
+        entries in it resolve to text.
     [ ] The site still builds.
 
   Then open a pull request that says, in this order: what the reader gets, which
