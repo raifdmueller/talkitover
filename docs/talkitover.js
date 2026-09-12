@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.0 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.1 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -45,6 +45,13 @@
     return String(template).replaceAll("{url}", url);
   }
 
+  function providerIds(attribute) {
+    return String(attribute || Object.keys(providers).join(","))
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => providers[id]);
+  }
+
   function providerUrl(id, prompt) {
     const provider = providers[id];
     if (!provider || !provider.url) return null;
@@ -62,6 +69,7 @@
     defaults: DEFAULTS,
     maxUrlLength: MAX_URL_LENGTH,
     buildPrompt,
+    providerIds,
     providerUrl,
     needsClipboardFallback,
   };
@@ -115,12 +123,11 @@
     connectedCallback() {
       const root = this.attachShadow({ mode: "open" });
       const label = this.getAttribute("label") || DEFAULTS.label;
-      const ids = (this.getAttribute("providers") || Object.keys(providers).join(","))
-        .split(",").map((s) => s.trim()).filter((id) => providers[id]);
+      const ids = providerIds(this.getAttribute("providers"));
 
       root.innerHTML = `<style>${STYLE}</style>
         <div class="row">
-          <button class="main" type="button">${ICON}<span class="label">${label}</span></button>
+          <button class="main" type="button">${ICON}<span class="label"></span></button>
           <button class="more" type="button" aria-label="Choose LLM" aria-haspopup="menu" aria-expanded="false">${CHEVRON}</button>
         </div>
         <div class="menu" role="menu" hidden>
@@ -130,6 +137,9 @@
 
       this.$main = root.querySelector(".main");
       this.$label = root.querySelector(".label");
+      // Als Text, nicht als Markup: das Label kommt aus einem Attribut, und ein
+      // Integrator könnte es aus der URL oder aus Inhalten befüllen.
+      this.$label.textContent = label;
       this.$more = root.querySelector(".more");
       this.$menu = root.querySelector(".menu");
       this.label = label;
@@ -166,7 +176,8 @@
         b.setAttribute("aria-checked", String(b.dataset.id === current)));
       this.$menu.hidden = !open;
       this.$more.setAttribute("aria-expanded", String(open));
-      if (open) this.$menu.querySelector("button").focus();
+      // Ein providers-Attribut aus lauter unbekannten IDs lässt das Menü leer.
+      if (open) this.$menu.querySelector("button")?.focus();
     }
 
     async run(id) {
