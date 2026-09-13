@@ -1,0 +1,20 @@
+{%- comment -%}
+Der Button dieser Site, aus docs/_data/talkitover.json.
+
+Die Datei schreibt scripts/talkitover.mjs zwischen zwei Jekyll-Durchläufen —
+wie Rezept „Jekyll" es vorgibt. Von Hand gepflegt wäre sie beim nächsten
+Beitrag veraltet.
+
+Die Zeilenumbrüche müssen als &#10; ins Attribut: Eine Leerzeile darin beendet
+das HTML-Element in den meisten Template-Pipelines und zerreißt die Seite.
+{%- endcomment -%}
+{%- if site.data.talkitover -%}
+<talk-it-over
+  url="{{ site.data.talkitover.url }}"
+  prompt="{{ site.data.talkitover.prompt | escape | newline_to_br | replace: '<br />', '&#10;' | strip_newlines }}"
+  data-prompt="{{ site.data.talkitover.version }}"
+  label="Let's talk it over"></talk-it-over>
+{%- else -%}
+<p class="muted">Der Button fehlt: <code>npm run build:talkitover</code> lief
+nicht zwischen den beiden Jekyll-Durchläufen.</p>
+{%- endif -%}

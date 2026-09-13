@@ -1,0 +1,5 @@
+# Aus dem Bau erzeugt: die Textfassungen der Seiten und der Prompt des Buttons.
+# Beides schreibt scripts/talkitover.mjs zwischen den zwei Jekyll-Durchläufen.
+docs/text/
+docs/_data/talkitover.json
+_site/

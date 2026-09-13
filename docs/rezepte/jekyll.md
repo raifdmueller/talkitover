@@ -1,0 +1,124 @@
+TalkItOver — Recipe "Jekyll" (v1)
+Applies when the site is built by Jekyll. Jekyll already knows every page it
+publishes; what it cannot do is turn them into text a reader's LLM can fetch.
+This recipe adds that step and wires the button to what it produces.
+
+The generator is the same one Recipe 1 installs. It reads the BUILT site, not
+the sources: after Jekyll has run, `_site` holds exactly what readers get, and
+nothing has to guess how a layout renders.
+
+STEP 1 — Check the preconditions.
+
+  a) A `_config.yml` exists, plus `_layouts/` or `_posts/`.
+  b) The site is built by a GitHub Actions workflow, not by the Pages default
+     build. Look for `actions/jekyll-build-pages` or a `jekyll build` step in
+     `.github/workflows/`.
+
+  (b) missing -> STOP. Say this: the Pages default build runs Jekyll for you and
+  allows no step of your own, so the text versions can never be produced. The
+  fix is to switch Settings -> Pages -> Source to "GitHub Actions" and add a
+  workflow — which changes how the site deploys, and is the maintainer's call,
+  not yours. Change nothing.
+
+STEP 2 — Find the content container and the title suffix.
+
+  Build the site once and open two pages in `_site`. Find the element that wraps
+  the article — often `<main>`, sometimes `<article>`. Left out, every text
+  version carries the same menu, and a bundle is half navigation.
+
+  Note also the part of every `<title>` that repeats, e.g. ` · Site Name`. It
+  costs budget in the prompt and says nothing.
+
+STEP 3 — Vendor talkitover.js.
+
+  Download https://raifdmueller.github.io/talkitover/talkitover.js and commit it
+  into the repository, where Jekyll publishes static files. Keep the header
+  comment intact — it carries the version and the MIT licence. Do not load the
+  file from a CDN or from the hub site at runtime.
+
+STEP 4 — Install the generator and its configuration.
+
+  Download https://raifdmueller.github.io/talkitover/vorlagen/talkitover-build.mjs
+  and commit it. Do not rewrite it. Add one small script next to it that calls
+  build() with this site's values:
+
+    root        the BUILT site, usually `_site`
+    out         where the text versions go, inside the Jekyll source, e.g.
+                `<source>/text` — Jekyll copies it on the next run
+    siteUrl     `url` + `baseurl` from _config.yml, with a trailing slash
+    sections    the pages that answer a question about the site itself, most
+                important first. Match the path exactly as published, e.g.
+                `index.html`, `about/index.html` — NOT just `index.html` if the
+                site has nested ones, or every page lands on the same rank
+    container   the element from STEP 2
+    stripSuffix the repeating title part from STEP 2
+    skip        anything that is not content: test pages, and files GitHub Pages
+                serves as application/octet-stream, such as `.adoc`
+    extraPages  readTextFiles(builtSite, siteUrl) — files Jekyll copies through
+                unchanged are ALREADY text. The prompt names them where they
+                lie; a converted copy next to them would only go stale
+    prose       the first fenced code block of
+                https://raifdmueller.github.io/talkitover/prompts/site.md
+
+  The script writes the prompt into `<source>/_data/talkitover.json`.
+
+STEP 5 — Two Jekyll runs, in this order.
+
+  Jekyll cannot insert what does not exist yet. So the build becomes:
+
+    jekyll build          # produces the HTML
+    node <your script>    # reads it, writes the text versions and the prompt
+    jekyll build          # renders the button from the prompt
+
+  Add this to the workflow, before the artifact is uploaded. Both runs use the
+  same source and destination.
+
+  The second run costs a second or two. A single run would need the generator to
+  patch the built HTML afterwards — invisible in the repository, and gone the
+  next time someone reads the source to understand the site.
+
+  Ignore the generated files in .gitignore: `<source>/text/` and
+  `<source>/_data/talkitover.json`. They are derived, and they change whenever
+  the content does.
+
+STEP 6 — Place the button.
+
+  One include, rendered from the data:
+
+    <talk-it-over
+      url="{{ site.data.talkitover.url }}"
+      prompt="{{ site.data.talkitover.prompt | escape | newline_to_br | replace: '<br />', '&#10;' | strip_newlines }}"
+      data-prompt="site@1"></talk-it-over>
+
+  The filter chain matters. A blank line inside an HTML attribute ends the
+  element in most template pipelines and tears the page apart at exactly that
+  spot; `&#10;` survives, and the browser decodes it before the component reads
+  the attribute.
+
+  Wrap the include in `{% if site.data.talkitover %}`. Without it, a build that
+  skipped the generator renders a button with empty attributes — worse than no
+  button, because it looks like it works.
+
+  Put it where a reader arrives and decides what to do: the start page near the
+  headline, or a header every page shares. One button for the whole site.
+
+STEP 7 — Check your own work, then open the pull request.
+
+  Before committing, verify:
+    [ ] The diff contains the vendored file, the generator, its configuration,
+        the include, the workflow change, and nothing else.
+    [ ] No file contains prose you wrote.
+    [ ] The build runs twice in a row and produces the same prompt.
+    [ ] Open two generated text files and read them. The article is there, the
+        menu is not, and the first two lines are the title and "Page:".
+    [ ] The rendered attribute contains no raw newline, and `{url}` is still in
+        it — the component fills that in, not Jekyll.
+    [ ] Every URL in the prompt answers 200 with a text Content-Type.
+    [ ] The provider URL stays under 6000 characters.
+
+  Then open a pull request that says, in this order: what the reader gets, which
+  files changed, that nothing has to be operated, and how to undo it. Name the
+  numbers the generator reported.
+
+If you stop at any step, say which step, which condition failed, and what the
+maintainer can do about it. A clear stop beats a half-talkable site.

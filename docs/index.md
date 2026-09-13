@@ -13,16 +13,11 @@ description: Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze
 Original — und du betreibst nichts.</p>
 
 <div class="actions">
-<talk-it-over
-  url="https://llm-coding.github.io/Semantic-Anchors/llms-index.md?v=9e92517e"
-  prompt="Load {url}. It is the index of one site: it names everything published&#10;there and holds none of it.&#10;&#10;Your fetch tool may refuse a link it only found inside that index, so&#10;every URL you need is here in my message.&#10;&#10;Pages about the project. A question about a workflow or a method is&#10;usually answered here, not by a single term:&#10;&#10;- About: https://llm-coding.github.io/Semantic-Anchors/about/&#10;- Spec-Driven Development: https://llm-coding.github.io/Semantic-Anchors/spec-driven-development/&#10;- Brownfield Workflow: https://llm-coding.github.io/Semantic-Anchors/brownfield/&#10;- Brownfield Experiment 1a Report: https://llm-coding.github.io/Semantic-Anchors/brownfield-experiment-report/&#10;- Brownfield Fair Comparison: https://llm-coding.github.io/Semantic-Anchors/brownfield-fair-comparison/&#10;- Socratic Code-Theory Recovery Skill: https://llm-coding.github.io/Semantic-Anchors/socratic-recovery-skill/&#10;- Semantic Contracts: https://llm-coding.github.io/Semantic-Anchors/contracts/&#10;- AgentSkill: https://llm-coding.github.io/Semantic-Anchors/agentskill/&#10;- Evaluations: https://llm-coding.github.io/Semantic-Anchors/evaluations/&#10;- Full Reference: https://llm-coding.github.io/Semantic-Anchors/all-anchors/&#10;- Changelog: https://llm-coding.github.io/Semantic-Anchors/changelog/&#10;- Contributing: https://llm-coding.github.io/Semantic-Anchors/contributing/&#10;&#10;The named terms by category, each file holding its terms in full:&#10;&#10;- Communication &amp; Presentation (1/2): https://llm-coding.github.io/Semantic-Anchors/bundles/communication-presentation-1.md&#10;- Communication &amp; Presentation (2/2): https://llm-coding.github.io/Semantic-Anchors/bundles/communication-presentation-2.md&#10;- Creative Writing: https://llm-coding.github.io/Semantic-Anchors/bundles/creative-writing.md&#10;- Design Principles &amp; Patterns (1/3): https://llm-coding.github.io/Semantic-Anchors/bundles/design-principles-1.md&#10;- Design Principles &amp; Patterns (2/3): https://llm-coding.github.io/Semantic-Anchors/bundles/design-principles-2.md&#10;- Design Principles &amp; Patterns (3/3): https://llm-coding.github.io/Semantic-Anchors/bundles/design-principles-3.md&#10;- Development Workflow: https://llm-coding.github.io/Semantic-Anchors/bundles/development-workflow.md&#10;- Dialogue Interaction: https://llm-coding.github.io/Semantic-Anchors/bundles/dialogue-interaction.md&#10;- Documentation: https://llm-coding.github.io/Semantic-Anchors/bundles/documentation.md&#10;- Knowledge Management: https://llm-coding.github.io/Semantic-Anchors/bundles/knowledge-management.md&#10;- Meta: https://llm-coding.github.io/Semantic-Anchors/bundles/meta.md&#10;- Problem Solving (1/2): https://llm-coding.github.io/Semantic-Anchors/bundles/problem-solving-1.md&#10;- Problem Solving (2/2): https://llm-coding.github.io/Semantic-Anchors/bundles/problem-solving-2.md&#10;- Requirements Engineering: https://llm-coding.github.io/Semantic-Anchors/bundles/requirements-engineering.md&#10;- Software Architecture (1/2): https://llm-coding.github.io/Semantic-Anchors/bundles/software-architecture-1.md&#10;- Software Architecture (2/2): https://llm-coding.github.io/Semantic-Anchors/bundles/software-architecture-2.md&#10;- Statistical Methods &amp; Process Monitoring: https://llm-coding.github.io/Semantic-Anchors/bundles/statistical-methods.md&#10;- Strategic Planning (1/2): https://llm-coding.github.io/Semantic-Anchors/bundles/strategic-planning-1.md&#10;- Strategic Planning (2/2): https://llm-coding.github.io/Semantic-Anchors/bundles/strategic-planning-2.md&#10;- Testing &amp; Quality Practices: https://llm-coding.github.io/Semantic-Anchors/bundles/testing-quality.md&#10;&#10;All the contracts in one file: https://llm-coding.github.io/Semantic-Anchors/contracts.txt&#10;Everything at once, large and likely cut short: https://llm-coding.github.io/Semantic-Anchors/llms.txt&#10;&#10;Use the index to find a term's category, then fetch that category above.&#10;If a fetch is refused, say so and ask me to paste the URL.&#10;&#10;When I ask for a link, give me the page a person can open — each bundle&#10;names it under the term — never the .md file you read from.&#10;&#10;Ask what I am looking for before you fetch anything. Then fetch what&#10;matches, read it, and answer from what you read. Keep it short and name&#10;where each answer came from.&#10;&#10;If nothing here fits, say so — do not answer from memory and do not go&#10;looking elsewhere."
-  data-prompt="katalog@3"
-  label="Let's talk it over"></talk-it-over>
+{% include talkitover.html %}
 </div>
 
-<p class="muted">Kein Mockup: derselbe Button, den
-<a href="https://llm-coding.github.io/Semantic-Anchors/">Semantic Anchors</a>
-ausliefert — 12 Doku-Seiten, 21 Contracts, 196 Begriffe.</p>
+<p class="muted">Kein Mockup: Der Button übergibt <em>diese</em> Site — die
+Rezepte, die Prompts, die Erkenntnisse. Frag ihn, wie du anfängst.</p>
 </div>
 
 ## Warum nicht einfach ein Chat-Widget
@@ -52,11 +47,10 @@ Commit veraltet. Ein Script im Build ist es nicht.
 
 ## Wo der Button schon steht
 
-Zwei Sites übergeben ihren Inhalt heute an den LLM ihrer Leser: der Katalog von
-[Semantic Anchors](https://llm-coding.github.io/Semantic-Anchors/) und eine
-persönliche Website ohne jeden Generator. Zwei Rezepte, zwei Formen, derselbe
-Button — [die Galerie]({{ site.baseurl }}/galerie/) zeigt beide, und ein
-wöchentlicher Lauf prüft, ob sie noch funktionieren.
+Drei Sites übergeben ihren Inhalt heute an den LLM ihrer Leser, jede nach einem
+anderen Rezept — darunter diese hier. Drei Formen, derselbe Button.
+[Die Galerie]({{ site.baseurl }}/galerie/) zeigt alle drei, und ein wöchentlicher
+Lauf prüft, ob sie noch funktionieren.
 
 ## Was wir dabei gelernt haben
 
@@ -81,6 +75,6 @@ dich. Kennt er ihn nicht, bricht er ab und sagt warum – er improvisiert nicht.
 |---|---|
 | Quelltexte schon Markdown oder AsciiDoc, Index aus dem Build | [Rezept 0]({{ site.baseurl }}/rezepte/rezept-0.md) |
 | HTML von Hand im Repo, Build-Schritt vorhanden | [Rezept 1]({{ site.baseurl }}/rezepte/rezept-1.md) |
-| Jekyll | in Arbeit |
+| Jekyll | [Rezept Jekyll]({{ site.baseurl }}/rezepte/jekyll.md) |
 | docToolchain | in Arbeit |
 | Antora, Hugo, MkDocs | nicht in V1 |
