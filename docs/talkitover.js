@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.5 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.0.7 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,7 +19,7 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.5";
+  const VERSION = "1.0.7";
   const STORAGE_KEY = "talkitover.provider";
 
   /* Above this length a provider link is no longer safe: browsers, proxies and
@@ -117,6 +117,11 @@
 
   const STYLE = `
     :host { display: inline-block; position: relative; font: inherit; color: var(--tio-fg, inherit); }
+    /* While the menu is open the button has to sit above the rest of the page.
+       In normal flow anything that comes after it and has a stacking context of
+       its own paints over the menu — a heading, a card, a sticky bar. Raise the
+       host only while it is open, so it never fights the page otherwise. */
+    :host([data-open]) { z-index: var(--tio-z, 1000); }
     button { font: inherit; color: inherit; background: var(--tio-bg, transparent); cursor: pointer;
       border: 1px solid var(--tio-border, color-mix(in srgb, currentColor 35%, transparent));
       padding: .55em .9em; display: inline-flex; align-items: center; gap: .55em; line-height: 1.2; }
@@ -131,6 +136,9 @@
       border: 1px solid var(--tio-border, color-mix(in srgb, currentColor 35%, transparent));
       border-radius: var(--tio-radius, 8px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
     .menu[hidden] { display: none; }
+    /* In the top layer nothing clips the menu and no page z-index outranks it.
+       The position then has to come from the component. */
+    .menu:popover-open { position: fixed; margin: 0; }
     .menu button { border: 0; border-radius: 6px; width: 100%; justify-content: flex-end;
       white-space: nowrap; background: transparent; gap: .6em; }
     .menu button:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
@@ -153,7 +161,7 @@
           <button class="main" type="button">${ICON}<span class="label"></span></button>
           <button class="more" type="button" aria-label="Choose LLM" aria-haspopup="menu" aria-expanded="false">${CHEVRON}</button>
         </div>
-        <div class="menu" role="menu" hidden>
+        <div class="menu" role="menu" popover="manual" hidden>
           ${ids.map((id) => `<button type="button" role="menuitemradio" data-id="${id}" aria-checked="false">
             ${CHECK}<span>… ${providers[id].name}</span></button>`).join("")}
           <a class="about" role="menuitem" href="${api.aboutUrl}"
@@ -180,6 +188,10 @@
         if (btn) { remember.set(btn.dataset.id); this.refreshLabel(); this.toggle(false); this.run(btn.dataset.id); }
       });
       document.addEventListener("click", (e) => { if (!e.composedPath().includes(this)) this.toggle(false); });
+      // A position worked out once is wrong as soon as the page moves under it.
+      const close = () => { if (this.hasAttribute("data-open")) this.toggle(false); };
+      window.addEventListener("scroll", close, { passive: true, capture: true });
+      window.addEventListener("resize", close, { passive: true });
       this.addEventListener("keydown", (e) => { if (e.key === "Escape") this.toggle(false); });
     }
 
@@ -195,14 +207,35 @@
       );
     }
 
-    toggle(open = this.$menu.hidden) {
+    toggle(open = !this.hasAttribute("data-open")) {
       const current = remember.get();
       this.$menu.querySelectorAll("[data-id]").forEach((b) =>
         b.setAttribute("aria-checked", String(b.dataset.id === current)));
-      this.$menu.hidden = !open;
+
+      const asPopover = typeof this.$menu.showPopover === "function";
+      if (open) {
+        if (asPopover) { this.place(); this.$menu.showPopover(); }
+        this.$menu.hidden = false;
+      } else {
+        if (asPopover && this.$menu.matches(":popover-open")) this.$menu.hidePopover();
+        this.$menu.hidden = true;
+      }
+
+      this.toggleAttribute("data-open", open);
       this.$more.setAttribute("aria-expanded", String(open));
       // A providers attribute of unknown ids only leaves the menu empty.
       if (open) this.$menu.querySelector("button")?.focus();
+    }
+
+    /* In the top layer the menu no longer knows its button, so the component
+       works out where it goes: right-aligned under the row. */
+    place() {
+      const row = this.$main.parentElement.getBoundingClientRect();
+      const style = this.$menu.style;
+      style.top = `${Math.round(row.bottom + 6)}px`;
+      style.left = `${Math.round(row.right)}px`;
+      style.transform = "translateX(-100%)";
+      style.minWidth = `${Math.round(row.width)}px`;
     }
 
     async run(id) {

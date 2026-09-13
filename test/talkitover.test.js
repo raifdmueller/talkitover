@@ -316,3 +316,27 @@ test('#10 Der Eintrag "About" ist kein Provider', () => {
     'die Voreinstellung führt nur Provider'
   )
 })
+
+/* Das offene Menü wurde abgeschnitten: Der Button steckte auf der Startseite von
+ * Semantic Anchors in einem Wrapper mit overflow:hidden (#hero > div, für die
+ * Klappanimation). Kein z-index hilft dagegen — nur die Top-Layer, in die ein
+ * Popover gehoben wird. overflow:hidden steckt in Karten, Akkordeons und
+ * Slidern überall, also muss die Komponente das können, nicht die Site. */
+test('#10 Das Menü wird in die Top-Layer gehoben, wo nichts es abschneidet', () => {
+  const { src } = load()
+
+  assert.ok(/popover="manual"/.test(src), 'das Menü ist ein Popover')
+  assert.ok(/showPopover/.test(src) && /hidePopover/.test(src), 'es wird geöffnet und geschlossen')
+  assert.ok(
+    /typeof this\.\$menu\.showPopover === "function"/.test(src),
+    'Browser ohne Popover fallen auf das alte Verhalten zurück'
+  )
+  assert.ok(/:popover-open/.test(src), 'der geöffnete Zustand ist gestylt')
+})
+
+test('#10 Ein Popover schwebt nicht davon: Scrollen und Größenänderung schließen es', () => {
+  const { src } = load()
+
+  assert.ok(/addEventListener\("scroll"/.test(src), 'Scrollen schließt das Menü')
+  assert.ok(/addEventListener\("resize"/.test(src), 'Größenänderung schließt das Menü')
+})
