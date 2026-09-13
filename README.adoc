@@ -8,8 +8,8 @@
 *Mach deine Site talkable.* Ein Button übergibt sie an den LLM deines Lesers.
 Die ganze Site, im Original — und du betreibst nichts.
 
-{site}/[Website] · {site}/erkenntnisse/[Was wir gemessen haben] ·
-{site}/en/findings/[English]
+{site}/[Website] · {site}/galerie/[Galerie] ·
+{site}/erkenntnisse/[Was wir gemessen haben] · {site}/en/findings/[English]
 
 toc::[]
 
@@ -64,9 +64,13 @@ misst das Budget und baut den Prompt.
 |`docs/prd.adoc`
 |Das PRD mit den Entscheidungen E1–E8.
 
+|`docs/_data/sites.json`
+|Die Galerie: jede Site, auf der ein Button steht. Als Daten, damit ein Lauf
+sie prüfen kann.
+
 |`test/`
-|38 Tests, ohne Abhängigkeiten. Dazu `check:demo`, der den Demo-Button gegen
-die Site prüft, auf die er zeigt.
+|53 Tests, ohne Abhängigkeiten. Dazu `check:demo` und `check:sites`, die den
+Demo-Button und jeden Galerie-Eintrag gegen die echten Sites prüfen.
 |===
 
 == Warum es so gebaut ist
@@ -97,8 +101,9 @@ mit den Zahlen, und mit dem, was noch ungemessen ist.
 
 [source,bash]
 ----
-npm test              # 38 Tests, keine Abhängigkeiten
+npm test              # 53 Tests, keine Abhängigkeiten
 npm run check:demo    # prüft den Demo-Button gegen die Site, auf die er zeigt
+npm run check:sites   # prüft jeden Galerie-Eintrag gegen die echte Site
 ----
 
 Die Website ist Jekyll aus `docs/`, gebaut von GitHub Pages:

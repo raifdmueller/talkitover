@@ -50,6 +50,14 @@ deinem Repo:
 Der Generator ist der Punkt. Was ein LLM heute schreibt, ist beim nächsten
 Commit veraltet. Ein Script im Build ist es nicht.
 
+## Wo der Button schon steht
+
+Zwei Sites übergeben ihren Inhalt heute an den LLM ihrer Leser: der Katalog von
+[Semantic Anchors](https://llm-coding.github.io/Semantic-Anchors/) und eine
+persönliche Website ohne jeden Generator. Zwei Rezepte, zwei Formen, derselbe
+Button — [die Galerie]({{ site.baseurl }}/galerie/) zeigt beide, und ein
+wöchentlicher Lauf prüft, ob sie noch funktionieren.
+
 ## Was wir dabei gelernt haben
 
 Eine Site talkable zu machen ist keine Design-Frage, sondern eine Frage, was das
