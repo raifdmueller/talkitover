@@ -149,6 +149,35 @@ fehlten auch in der `sitemap.xml`.
 Die Liste stand da schon zum vierten Mal im Projekt. Der Router weiß alles; wir
 haben danebengeschrieben.
 
+## Die Form gehört gemessen, nicht gewählt
+
+Wie viele Seiten der Prompt einzeln nennt und wie viele er bündelt, ist keine
+Entscheidung am Reißbrett. Es ist eine Rechnung: Solange die Seiten einzeln in
+die Provider-URL passen, werden sie einzeln genannt — dann holt das LLM genau
+die eine Seite, um die es geht, statt vierzig Kilobyte Nachbarschaft.
+
+Auf einer persönlichen Website mit 43 Seiten kam heraus: 32 einzeln, 11 in
+einem Bündel, 5392 von 6000 Zeichen. Bei Semantic Anchors mit 459 Seiten kam
+dieselbe Rechnung auf zwölf Seiten und zwanzig Bündel. Zwei Sites, eine Regel,
+zwei Formen.
+
+Der Generator füllt dabei bewusst nicht bis an die Kante, sondern lässt ein
+Zehntel frei. Bis an die Kante gefüllt würde der nächste Blogbeitrag die Form
+umwerfen — und mit ihr die URLs, die schon in Gesprächen unterwegs sind.
+
+## Die meisten Sites haben keinen Generator
+
+Wir hatten drei Rezepte vorgesehen: schon LLM-lesbar, Jekyll, docToolchain. Die
+erste fremde Site, die wir uns angesehen haben, war nichts davon. Kein
+`_config.yml`, kein `Gemfile`, ein `package.json`, das CSS minimiert und Bilder
+optimiert — die 43 HTML-Dateien liegen von Hand geschrieben im Repo.
+
+Rezept 0 bricht dort ab, und das ist richtig so. Aber „bricht ab" ist keine
+Antwort für jemanden, der einen Button will. Also gibt es jetzt ein Rezept, das
+den Generator **mitbringt**: Es liest die HTML-Dateien, die tatsächlich da sind,
+schreibt Textfassungen und baut den Prompt. Aus 472 KB HTML wurden 91 KB Text —
+der Rest war auf jeder Seite dasselbe Menü.
+
 ## Was offen ist
 
 Zwei Zahlen sind geraten, und beide sind messbar:

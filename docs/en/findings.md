@@ -148,6 +148,35 @@ routes turned up **five missing pages**, two of which were missing from
 That list was already written in the project for the fourth time. The router
 knows all of it; we wrote alongside it.
 
+## The shape is measured, not chosen
+
+How many pages the prompt names individually and how many it bundles is not a
+drawing-board decision. It is arithmetic: as long as the pages fit into the
+provider URL one by one, they are named one by one — then the LLM fetches
+exactly the page in question instead of forty kilobytes of neighbourhood.
+
+On a personal website with 43 pages the answer came out as 32 named, 11 in one
+bundle, 5392 of 6000 characters. On Semantic Anchors with 459 pages the same
+arithmetic gave twelve pages and twenty bundles. Two sites, one rule, two
+shapes.
+
+The generator deliberately stops short of the ceiling and leaves a tenth free.
+Filled to the edge, the next blog post would overturn the shape — and with it
+the URLs already travelling in conversations.
+
+## Most sites have no generator
+
+We had planned for three recipes: already LLM-readable, Jekyll, docToolchain.
+The first outside site we looked at was none of them. No `_config.yml`, no
+`Gemfile`, a `package.json` that minifies CSS and optimises images — the 43
+HTML files sit hand-written in the repository.
+
+Recipe 0 stops there, and rightly so. But "it stops" is no answer for someone
+who wants a button. So there is now a recipe that **brings** the generator: it
+reads the HTML files that are actually there, writes text versions, and builds
+the prompt. 472 KB of HTML turned into 91 KB of text — the rest was the same
+menu on every page.
+
 ## What is still open
 
 Two numbers are guesses, and both are measurable:

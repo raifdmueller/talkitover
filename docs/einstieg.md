@@ -12,6 +12,9 @@ STEP 1 — Detect the generator yourself.
                         (llms.txt) exists or is produced by the build.
   jekyll                _config.yml plus _layouts/ or _posts/.
   doctoolchain          docToolchainConfig.groovy or the dtcw wrapper.
+  static-html           .html files committed in the repository, no generator
+                        config for any of the above, and a build step that
+                        already runs (npm script, Makefile, CI workflow).
 
   Exactly one match  -> go to STEP 2.
   Several or none    -> ASK the maintainer which one applies, show what you
@@ -22,6 +25,7 @@ STEP 2 — Load the matching recipe and follow it.
   already-llm-readable  https://raifdmueller.github.io/talkitover/rezepte/rezept-0.md
   jekyll                https://raifdmueller.github.io/talkitover/rezepte/jekyll.md
   doctoolchain          https://raifdmueller.github.io/talkitover/rezepte/doctoolchain.md
+  static-html           https://raifdmueller.github.io/talkitover/rezepte/rezept-1.md
 
   Fetch the recipe over the network and do what it says — the recipe, not your
   own idea of it. If the URL returns anything but the recipe text, stop and
@@ -30,7 +34,7 @@ STEP 2 — Load the matching recipe and follow it.
 STEP 3 — Anything else: stop.
 
   If the maintainer names a generator that has no recipe above, stop. Say which
-  generator you found, that V1 supports exactly the three above, and that you
+  generator you found, that V1 supports exactly the four above, and that you
   changed nothing. That is a useful answer, not a failure.
 
 Rules for the whole run:
