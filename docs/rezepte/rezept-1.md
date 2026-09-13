@@ -1,0 +1,116 @@
+TalkItOver — Recipe 1: "static HTML, no generator" (v1)
+Applies when the site is HTML files in a repository: hand-written, or produced
+by something that leaves no source text behind. There is no index, and the
+pages themselves are the only content there is.
+
+This recipe ADDS a build step. Recipe 0 stops here for a reason — a list
+maintained by hand goes stale with the next commit. The script this recipe
+installs reads the files that are actually there, so nothing has to be kept in
+sync by a person.
+
+STEP 1 — Check the preconditions.
+
+  a) The published pages live in the repository as .html files, and the
+     repository is the thing that gets deployed.
+  b) There is a place to run a build step: an npm script, a Makefile target,
+     or a CI workflow that already runs before the deploy.
+
+  (b) missing -> STOP. Say that the site is deployed without a build, that this
+  recipe needs one, and what adding one would mean. Change nothing.
+
+  Then look at whether the pages are really the content. If the HTML is a shell
+  that loads its text with JavaScript, this recipe produces empty files.
+  Fetch one page and look for its text in the response body — not in the
+  browser.
+
+  Text not in the response -> STOP. Say the site renders on the client, and
+  that its content has to come from wherever the JavaScript gets it.
+
+STEP 2 — Find the content container.
+
+  Every page repeats a menu and a footer. Left in, a bundle is half navigation,
+  and the size limit is reached after half as many pages.
+
+  Fetch two or three pages and find the element that wraps the article: often
+  <main>, sometimes <article> or a div with a content class. Note its tag.
+
+  No such element -> the whole body is used. Say so in the pull request; the
+  maintainer may want to add one.
+
+STEP 3 — Vendor talkitover.js.
+
+  Download https://raifdmueller.github.io/talkitover/talkitover.js and commit it
+  into the repository, next to the site's other static assets. Keep the header
+  comment intact — it carries the version and the MIT licence. Do not load the
+  file from a CDN or from the hub site at runtime.
+
+STEP 4 — Install the generator.
+
+  Download https://raifdmueller.github.io/talkitover/vorlagen/talkitover-build.mjs
+  and commit it into the repository's build scripts. Do not rewrite it. Add one
+  small file next to it that calls build() with this site's values:
+
+    root        the directory the .html files live in
+    out         where the text versions go, e.g. <root>/text
+    siteUrl     the site's address, with a trailing slash
+    sections    the pages that answer a question about the site itself —
+                start page, about, index pages — most important first
+    stripSuffix a regular expression for the part of every <title> that
+                repeats, e.g. / \| Example Site$/
+    container   the element from STEP 2
+    prose       the first fenced code block of
+                https://raifdmueller.github.io/talkitover/prompts/site.md
+    dates       optional: url -> date, so the newest entries are the ones
+                named individually. A sitemap's <lastmod> will do.
+
+  Wire it into the existing build, before the deploy. Commit the generated
+  files or ignore them — whichever the repository already does with build
+  output. Ignored is better: they are derived, and they change on every post.
+
+STEP 5 — Let the generator choose the shape, and write the button.
+
+  build() returns { prompt, url, length, named, bundled }. It names pages
+  individually as long as they fit into the provider URL, and bundles the rest.
+  Do not override that: it is measured, and the measurement is what keeps the
+  button one click.
+
+    length near 6000  -> fine, the generator keeps a tenth in reserve.
+    named === 0       -> the site is too large for this recipe as written, or
+                         prose is much longer than the template. Say so.
+
+  Write the button where a reader arrives and decides what to do: the start
+  page, near the headline, or in a header every page shares. Not in a footer,
+  not floating. One button for the whole site, never one per page.
+
+    <script src="PATH/talkitover.js"></script>
+    <talk-it-over url="RETURNED url" prompt="RETURNED prompt" data-prompt="site@1"></talk-it-over>
+
+  Put the prompt on ONE physical line and write its line breaks as &#10;, its
+  ampersands as &amp; — a blank line inside an HTML attribute ends the element
+  in most template pipelines and tears the page apart at exactly that spot.
+
+  The button's markup is generated too, or it becomes the hand-maintained list
+  this recipe exists to avoid. Have the script write a snippet the page
+  includes, or have it patch the one page that carries the button.
+
+STEP 6 — Check your own work, then open the pull request.
+
+  Before committing, verify:
+    [ ] The diff contains the vendored file, the generator, its configuration,
+        one button, and nothing else.
+    [ ] No file contains prose you wrote. No summaries, no generated
+        descriptions, no "About this page".
+    [ ] Open two generated text files and read them. The article is there, the
+        menu is not, and the first two lines are the title and "Page:".
+    [ ] Every URL in the prompt answers 200 with a text Content-Type.
+    [ ] The provider URL stays under 6000 characters.
+    [ ] The build runs twice in a row and produces the same files.
+    [ ] The site still builds and deploys.
+
+  Then open a pull request that says, in this order: what the reader gets,
+  which files changed, that nothing has to be operated, and how to undo it.
+  Name the numbers the generator reported — how many pages individually, how
+  many bundled, how long the provider URL is.
+
+If you stop at any step, say which step, which condition failed, and what the
+maintainer can do about it. A clear stop beats a half-talkable site.
