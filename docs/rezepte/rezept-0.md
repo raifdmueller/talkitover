@@ -75,7 +75,7 @@ STEP 4 — Place the one button.
   floating.
 
   <script src="PATH/talkitover.js"></script>
-  <talk-it-over url="FULL-URL-OF-THE-INDEX" prompt="..." data-prompt="katalog@1"></talk-it-over>
+  <talk-it-over url="FULL-URL-OF-THE-INDEX" prompt="..." data-prompt="katalog@2"></talk-it-over>
 
   The url attribute names the index by a FULL URL with scheme and host. The
   reader's LLM receives nothing but the prompt text: a path like /llms.txt has
