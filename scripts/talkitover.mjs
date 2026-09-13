@@ -49,6 +49,10 @@ const result = build({
   skip: SKIP,
   stripSuffix: / · TalkItOver$/,
   extraPages: readTextFiles(BUILT, SITE_URL, { skip: SKIP }),
+  // .txt, nicht .md: GitHub Pages rendert jede .md-Datei durch Liquid, auch
+  // ohne Front Matter. Eine Textfassung mit .md liefe im zweiten Durchlauf ein
+  // zweites Mal durch Liquid — und ein Liquid-Beispiel darin bricht den Bau ab.
+  extension: '.txt',
   prose,
 })
 
