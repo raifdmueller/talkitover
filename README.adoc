@@ -5,7 +5,7 @@
 :sectanchors:
 :site: https://raifdmueller.github.io/talkitover
 
-*Mach deine Site talkable.* Ein Button übergibt sie an den LLM deines Lesers.
+*Mach deine Site talkable.* Ein Button übergibt sie an das LLM deines Lesers.
 Die ganze Site, im Original — und du betreibst nichts.
 
 {site}/[Website] · {site}/galerie/[Galerie] ·

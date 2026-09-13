@@ -2,7 +2,7 @@
 layout: default
 permalink: /galerie/
 title: Wo der Button schon steht
-description: Sites, die ihren Inhalt an den LLM ihrer Leser übergeben — mit Rezept, Prompt-Typ und einer wöchentlichen Prüfung, ob sie noch funktionieren.
+description: Sites, die ihren Inhalt an das LLM ihrer Leser übergeben — mit Rezept, Prompt-Typ und einer wöchentlichen Prüfung, ob sie noch funktionieren.
 ---
 
 # Wo der Button schon steht

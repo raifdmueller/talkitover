@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Mach deine Site talkable
-description: Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze Site, im Original — und du betreibst nichts.
+description: Ein Button übergibt deine Site an das LLM deines Lesers. Die ganze Site, im Original — und du betreibst nichts.
 ---
 
 <div class="hero">
@@ -9,7 +9,7 @@ description: Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze
 
 <h1>Mach deine Site talkable.</h1>
 
-<p>Ein Button übergibt sie an den LLM deines Lesers. Die ganze Site, im
+<p>Ein Button übergibt sie an das LLM deines Lesers. Die ganze Site, im
 Original — und du betreibst nichts.</p>
 
 <div class="actions">
@@ -25,7 +25,7 @@ Rezepte, die Prompts, die Erkenntnisse. Frag ihn, wie du anfängst.</p>
 Weil du es betreiben müsstest. Ein gehostetes LLM bringt Kosten, Missbrauch und
 einen Schlüssel, der nicht in dein Repo darf.
 
-TalkItOver dreht das um: Der Leser bringt seinen LLM mit, deine Site reicht ihm
+TalkItOver dreht das um: Der Leser bringt sein LLM mit, deine Site reicht ihm
 den Inhalt. Was er fragt, siehst du nie — und musst es auch nicht.
 
 Probier den Button oben aus: Das Gespräch beginnt mit einer Frage an dich. Das
@@ -47,7 +47,7 @@ Commit veraltet. Ein Script im Build ist es nicht.
 
 ## Wo der Button schon steht
 
-Drei Sites übergeben ihren Inhalt heute an den LLM ihrer Leser, jede nach einem
+Drei Sites übergeben ihren Inhalt heute an das LLM ihrer Leser, jede nach einem
 anderen Rezept — darunter diese hier. Drei Formen, derselbe Button.
 [Die Galerie]({{ site.baseurl }}/galerie/) zeigt alle drei, und ein wöchentlicher
 Lauf prüft, ob sie noch funktionieren.
