@@ -1,11 +1,13 @@
-# Der Demo-Prompt auf der Startseite ist eine Kopie: Die Site hat keinen
-# Build-Schritt, der ihn von Semantic Anchors holen könnte. Kopien veralten —
-# Rezept 0 warnt in Schritt 2 vor genau dieser Sorte Liste. Also prüft ein
-# wöchentlicher Lauf, ob die Gegenseite sich bewegt hat.
+# Zwei Behauptungen dieser Site veralten von allein, und beide gegenüber
+# fremden Sites:
 #
-# Nicht in test.yml, weil der Lauf ins Netz greift: ein Ausfall dort darf
-# keinen fremden Pull Request rot machen.
-name: Demo-Button
+#   check:demo   Der Demo-Prompt auf der Startseite ist eine Kopie — diese Site
+#                hat keinen Build-Schritt, der ihn holen könnte.
+#   check:sites  Jeder Galerie-Eintrag behauptet, dass dort ein Button steht.
+#
+# Beides prüft ein wöchentlicher Lauf. Nicht in test.yml, weil er ins Netz
+# greift: ein Ausfall dort darf keinen fremden Pull Request rot machen.
+name: Buttons in freier Wildbahn
 
 on:
   schedule:
@@ -21,3 +23,5 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check:demo
+      - run: npm run check:sites
+        if: always()

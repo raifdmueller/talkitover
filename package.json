@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check:demo": "node test/demo-button.check.js"
+    "check:demo": "node test/demo-button.check.js",
+    "check:sites": "node test/sites.check.js"
   }
 }
