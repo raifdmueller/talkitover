@@ -8,6 +8,8 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const path = require('node:path')
+const fs = require('node:fs')
+const os = require('node:os')
 
 const VORLAGE = path.join(__dirname, '..', 'docs', 'vorlagen', 'talkitover-build.mjs')
 const load = () => import(`file://${VORLAGE}`)
@@ -154,4 +156,109 @@ test('slugOf macht aus einer URL einen Dateinamen ohne Pfadtrenner', async () =>
   assert.equal(slugOf('https://example.org/pages/blog/ein-text.html', site), 'pages-blog-ein-text')
   assert.equal(slugOf('https://example.org/index.html', site), 'index')
   assert.doesNotMatch(slugOf('https://example.org/a/b/c.html', site), /[/\\]/)
+})
+
+/*
+ * Manche Sites veröffentlichen neben dem HTML schon Text — Rohdateien, die
+ * Jekyll unverändert durchreicht. Die Hub-Site selbst ist so: Ihre Rezepte und
+ * Prompts sind .md-Dateien ohne Front Matter, und sie sind der eigentliche
+ * Inhalt. Ein Generator, der nur HTML liest, übersieht genau die.
+ */
+test('readTextFiles findet Dateien, die schon Text sind', async () => {
+  const { readTextFiles } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  fs.mkdirSync(path.join(dir, 'rezepte'))
+  fs.writeFileSync(path.join(dir, 'rezepte', 'rezept-0.md'), 'TalkItOver — Recipe 0\nText.\n')
+  fs.writeFileSync(path.join(dir, 'notiz.txt'), '# Eine Notiz\n\nText.\n')
+  fs.writeFileSync(path.join(dir, 'seite.html'), '<title>HTML</title><main><p>x</p></main>')
+
+  const found = readTextFiles(dir, 'https://example.org/')
+
+  assert.deepEqual(
+    found.map((p) => p.url).sort(),
+    ['https://example.org/notiz.txt', 'https://example.org/rezepte/rezept-0.md']
+  )
+  // Die Datei ist schon da, wo sie hingehört — sie wird nicht noch einmal
+  // geschrieben, und der Prompt nennt ihre eigene Adresse.
+  for (const page of found) assert.equal(page.asIs, true)
+  fs.rmSync(dir, { recursive: true })
+})
+
+test('readTextFiles nimmt den Titel aus der ersten Zeile', async () => {
+  const { readTextFiles } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  fs.writeFileSync(path.join(dir, 'mit-raute.md'), '# Der Titel\n\nText.\n')
+  fs.writeFileSync(path.join(dir, 'ohne-raute.md'), 'Der nackte Titel\n\nText.\n')
+  fs.writeFileSync(path.join(dir, 'leer.md'), '\n\n\nText nach Leerzeilen.\n')
+
+  const byName = Object.fromEntries(
+    readTextFiles(dir, 'https://example.org/').map((p) => [p.url.split('/').pop(), p.title])
+  )
+
+  assert.equal(byName['mit-raute.md'], 'Der Titel')
+  assert.equal(byName['ohne-raute.md'], 'Der nackte Titel')
+  assert.equal(byName['leer.md'], 'Text nach Leerzeilen.')
+  fs.rmSync(dir, { recursive: true })
+})
+
+/*
+ * Die Invariante, die den Unterschied ausmacht: Eine Datei, die schon Text ist,
+ * wird im Prompt unter ihrer eigenen Adresse genannt. Würde build() sie
+ * kopieren, gäbe es dieselbe Datei zweimal auf der Site — und die Kopie würde
+ * veralten.
+ */
+test('build nennt schon-Text-Dateien unter ihrer eigenen Adresse', async () => {
+  const { build, readTextFiles } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  fs.writeFileSync(path.join(dir, 'roh.md'), '# Roh\n\nSchon Text.\n')
+  fs.writeFileSync(path.join(dir, 'seite.html'), '<title>Seite</title><main><p>Inhalt.</p></main>')
+
+  const result = build({
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    prose: 'Load {url}.\n\n{pages}\n',
+    extraPages: readTextFiles(dir, 'https://example.org/'),
+  })
+
+  const urls = result.entries.map((e) => e.url)
+  assert.ok(urls.includes('https://example.org/roh.md'), 'die Rohdatei unter ihrer Adresse')
+  assert.ok(urls.includes('https://example.org/text/seite.md'), 'die HTML-Seite als Textfassung')
+  assert.equal(fs.existsSync(path.join(dir, 'text', 'roh.md')), false, 'keine Kopie der Rohdatei')
+  fs.rmSync(dir, { recursive: true })
+})
+
+/*
+ * sections nennt die Seiten, die zuerst kommen sollen — sie überleben das
+ * Budget, wenn es knapp wird. Der Vergleich muss den Pfad genau treffen:
+ * "index.html" mit endsWith passt auch auf "en/findings/index.html", und dann
+ * stehen alle Seiten auf demselben Rang. Auf der ersten Site mit
+ * verschachtelten Pfaden ist genau das passiert.
+ */
+test('sections trifft den Pfad genau, nicht nur sein Ende', async () => {
+  const { build } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  for (const [file, title] of [
+    ['index.html', 'Start'],
+    ['a/index.html', 'A'],
+    ['b/index.html', 'B'],
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(dir, file)), { recursive: true })
+    fs.writeFileSync(path.join(dir, file), `<title>${title}</title><main><p>x</p></main>`)
+  }
+
+  const result = build({
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    sections: ['index.html', 'b/index.html'],
+    prose: 'Load {url}.\n\n{pages}\n',
+  })
+
+  assert.deepEqual(
+    result.entries.map((e) => e.title),
+    ['Start', 'B', 'A'],
+    'die genannten Abschnitte in ihrer Reihenfolge, dann der Rest'
+  )
+  fs.rmSync(dir, { recursive: true })
 })

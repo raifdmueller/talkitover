@@ -164,14 +164,54 @@ export function readPages(root, siteUrl, options = {}) {
   return found
 }
 
+/**
+ * Dateien, die schon Text sind.
+ *
+ * Manche Sites veröffentlichen neben dem HTML Rohdateien — Jekyll reicht jede
+ * Datei ohne Front Matter unverändert durch. Sie brauchen keine Umwandlung und
+ * keine zweite Adresse: Der Prompt nennt sie, wie sie liegen.
+ */
+export function readTextFiles(root, siteUrl, options = {}) {
+  const { extensions = ['.md', '.txt'], skip = [] } = options
+  const found = []
+
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name)
+      const relative = path.relative(root, full).split(path.sep).join('/')
+      if (skip.some((s) => relative === s || relative.startsWith(`${s}/`))) continue
+      if (entry.isDirectory()) walk(full)
+      else if (entry.isFile() && extensions.some((e) => entry.name.endsWith(e))) {
+        const text = fs.readFileSync(full, 'utf-8')
+        found.push({ title: firstLineAsTitle(text, entry.name), url: siteUrl + relative, text, asIs: true })
+      }
+    }
+  }
+
+  walk(root)
+  return found
+}
+
+/** Die erste Zeile mit Inhalt ist der Titel — mit oder ohne Raute davor. */
+function firstLineAsTitle(text, fallback) {
+  const line = text.split('\n').map((l) => l.trim()).find(Boolean)
+  if (!line) return fallback
+  return line.replace(/^#+\s*/, '').trim() || fallback
+}
+
 export function build(options) {
-  const { root, out, siteUrl, sections = [], prose, dates = {}, budget, reserve } = options
+  const { root, out, siteUrl, sections = [], prose, dates = {}, budget, reserve, extraPages = [] } = options
   const pages = readPages(root, siteUrl, { ...options, skip: [...(options.skip || []), outName(out)] })
-  const ordered = order(pages, sections, dates)
+  const ordered = order([...pages, ...extraPages], sections, dates, siteUrl)
 
   const directory = outName(out)
   const entryOf = {
-    page: (page) => ({ title: page.title, url: `${siteUrl}${directory}/${slugOf(page.url, siteUrl)}.md` }),
+    // Eine Datei, die schon Text ist, liegt bereits dort, wo sie hingehört.
+    // Eine Kopie daneben wäre dieselbe Seite zweimal — und die Kopie veraltet.
+    page: (page) =>
+      page.asIs
+        ? { title: page.title, url: page.url }
+        : { title: page.title, url: `${siteUrl}${directory}/${slugOf(page.url, siteUrl)}.md` },
     bundle: (group, index) => ({
       title: `Weitere Seiten ${index + 1}`,
       url: `${siteUrl}${directory}/bundle-${index + 1}.md`,
@@ -184,6 +224,7 @@ export function build(options) {
   fs.rmSync(out, { recursive: true, force: true })
   fs.mkdirSync(out, { recursive: true })
   for (const page of ordered) {
+    if (page.asIs) continue
     fs.writeFileSync(path.join(out, `${slugOf(page.url, siteUrl)}.md`), asText(page), 'utf-8')
   }
   bundled.forEach((group, index) => {
@@ -213,9 +254,11 @@ export function build(options) {
  * jüngsten Beiträgen wird am häufigsten gefragt, und einzeln genannt heißt:
  * ein kleiner, genauer Abruf statt vierzig Kilobyte Nachbarschaft.
  */
-function order(pages, sections, dates) {
+function order(pages, sections, dates, siteUrl) {
+  // Genau der Pfad, nicht nur sein Ende: "index.html" mit endsWith passt auch
+  // auf "en/findings/index.html", und dann steht die halbe Site auf Rang null.
   const rank = (page) => {
-    const index = sections.findIndex((s) => page.url.endsWith(s))
+    const index = sections.findIndex((s) => page.url === siteUrl + s)
     return index === -1 ? sections.length : index
   }
   return [...pages].sort(

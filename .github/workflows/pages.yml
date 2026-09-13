@@ -23,10 +23,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Zwei Durchläufe, weil Jekyll nichts einsetzen kann, was es noch nicht
+      # gibt: Der erste erzeugt das HTML, das Script liest es und schreibt die
+      # Textfassungen und den Prompt, der zweite rendert damit den Button.
+      # So macht diese Site, was ihr Jekyll-Rezept vorschreibt (#21).
       - uses: actions/jekyll-build-pages@v1
         with:
           source: ./docs
           destination: ./_site
+      - run: npm run build:talkitover
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
       - uses: actions/upload-pages-artifact@v3
 
   deploy:

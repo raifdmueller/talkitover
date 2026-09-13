@@ -1,5 +1,15 @@
 [
   {
+    "name": "TalkItOver",
+    "url": "https://raifdmueller.github.io/talkitover/",
+    "script": "https://raifdmueller.github.io/talkitover/talkitover.js",
+    "target": "https://raifdmueller.github.io/talkitover/text/index.md",
+    "prompt": "site@1",
+    "recipe": "Rezept Jekyll",
+    "since": "2026-09-13",
+    "note": "Diese Site, durch ihr eigenes Rezept. Der Button übergibt die Rezepte, die Prompts und die Erkenntnisse — frag ihn, wie du anfängst."
+  },
+  {
     "name": "Semantic Anchors",
     "url": "https://llm-coding.github.io/Semantic-Anchors/",
     "script": "https://llm-coding.github.io/Semantic-Anchors/talkitover.js",

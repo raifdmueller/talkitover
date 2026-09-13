@@ -49,9 +49,9 @@ sagt warum — es improvisiert nicht.
 |Der Prompt, mit dem alles anfängt: Generator erkennen, Rezept holen.
 
 |`docs/rezepte/`
-|Rezept 0 (Quellen schon LLM-lesbar) und Rezept 1 (statisches HTML ohne
-Generator). Jedes mit Abbruchkriterien — ein klarer Stopp schlägt eine halb
-talkable Site.
+|Rezept 0 (Quellen schon LLM-lesbar), Rezept 1 (statisches HTML ohne Generator)
+und das Jekyll-Rezept, nach dem diese Site selbst gebaut ist. Jedes mit
+Abbruchkriterien — ein klarer Stopp schlägt eine halb talkable Site.
 
 |`docs/prompts/`
 |Die Content-Typ-Prompts: `referenz@1` für eine Seite, `katalog@3` für eine
@@ -68,9 +68,13 @@ misst das Budget und baut den Prompt.
 |Die Galerie: jede Site, auf der ein Button steht. Als Daten, damit ein Lauf
 sie prüfen kann.
 
+|`scripts/talkitover.mjs`
+|Diese Site durch ihr eigenes Jekyll-Rezept: läuft zwischen zwei
+Jekyll-Durchläufen und schreibt die Textfassungen und den Prompt des Buttons.
+
 |`test/`
-|53 Tests, ohne Abhängigkeiten. Dazu `check:demo` und `check:sites`, die den
-Demo-Button und jeden Galerie-Eintrag gegen die echten Sites prüfen.
+|57 Tests, ohne Abhängigkeiten. Dazu `check:sites`, das jeden Galerie-Eintrag
+gegen die echte Site prüft.
 |===
 
 == Warum es so gebaut ist
@@ -101,17 +105,21 @@ mit den Zahlen, und mit dem, was noch ungemessen ist.
 
 [source,bash]
 ----
-npm test              # 53 Tests, keine Abhängigkeiten
-npm run check:demo    # prüft den Demo-Button gegen die Site, auf die er zeigt
-npm run check:sites   # prüft jeden Galerie-Eintrag gegen die echte Site
+npm test                # 57 Tests, keine Abhängigkeiten
+npm run check:sites     # prüft jeden Galerie-Eintrag gegen die echte Site
+npm run build:talkitover # erzeugt Textfassungen und Prompt (zwischen den Builds)
 ----
 
 Die Website ist Jekyll aus `docs/`, gebaut von GitHub Pages:
 
 [source,bash]
 ----
-jekyll build -s docs -d _site
+jekyll build -s docs -d _site   # erzeugt das HTML
+npm run build:talkitover        # liest es, schreibt Textfassungen und Prompt
+jekyll build -s docs -d _site   # rendert den Button daraus
 ----
+
+Zwei Durchläufe, weil Jekyll nichts einsetzen kann, was es noch nicht gibt.
 
 Rezepte und Prompts tragen bewusst kein Front Matter. Jekyll kopiert sie
 dadurch unverändert — Claude Code bekommt Rohtext, keine HTML-Hülle.

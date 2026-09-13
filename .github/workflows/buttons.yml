@@ -1,0 +1,23 @@
+# Jeder Galerie-Eintrag behauptet, dass dort ein Button steht — auch der für
+# diese Site selbst. Behauptungen veralten, also prüft ein wöchentlicher Lauf,
+# ob die Sites noch antworten, talkitover.js noch dort liegt und das Ziel des
+# Buttons als Text kommt.
+#
+# Nicht in test.yml, weil der Lauf ins Netz greift: ein Ausfall dort darf keinen
+# fremden Pull Request rot machen.
+name: Buttons in freier Wildbahn
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check:sites
