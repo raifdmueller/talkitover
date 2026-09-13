@@ -4,20 +4,13 @@ title: Mach deine Site talkable
 description: Ein Button, der deine Seite an den LLM deines Lesers übergibt. Ein Claude-Code-Lauf, ein PR, kein Betrieb.
 ---
 
-# Dein Leser hat schon ein LLM. Gib ihm die Seite.
+<div class="hero">
+{% include logo.svg %}
 
-Wer eine Doku-Seite oder ein Transcript mit Claude besprechen will, kopiert
-heute Text, rät URLs oder scheitert an JavaScript. Du könntest ein LLM hosten –
-und hättest Kosten, Missbrauch und Betrieb am Hals.
+<h1>Dein Leser hat schon ein LLM. Gib ihm die Seite.</h1>
 
-TalkItOver dreht das um: Der Leser bringt seinen LLM mit, deine Site reicht ihm
-den Inhalt. Du betreibst nichts.
-
-## So fühlt sich das an
-
-Der Button unten übergibt einen Anchor aus
-[Semantic Anchors](https://llm-coding.github.io/Semantic-Anchors/) an deinen
-LLM – den Originaltext, nicht eine Kopie.
+<p>Ein Button, der deine Site an den LLM deines Lesers übergibt. Du betreibst
+nichts, zahlst nichts und hostest kein Modell.</p>
 
 <div class="actions">
 <talk-it-over
@@ -27,8 +20,20 @@ LLM – den Originaltext, nicht eine Kopie.
   label="Let's talk it over"></talk-it-over>
 </div>
 
-<p class="muted">Das Gespräch beginnt mit einer Frage an dich. Das ist Absicht:
-Eine Zusammenfassung hättest du auch selbst lesen können.</p>
+<p class="muted">Kein Mockup: Der Button übergibt einen echten Anchor aus
+Semantic Anchors.</p>
+</div>
+
+## Warum nicht einfach ein Chat-Widget
+
+Weil du es betreiben müsstest. Ein gehostetes LLM bringt Kosten, Missbrauch und
+einen Schlüssel, der nicht in dein Repo darf.
+
+TalkItOver dreht das um: Der Leser bringt seinen LLM mit, deine Site reicht ihm
+den Inhalt. Was er fragt, siehst du nie — und musst es auch nicht.
+
+Probier den Button oben aus: Das Gespräch beginnt mit einer Frage an dich. Das
+ist Absicht. Eine Zusammenfassung hättest du auch selbst lesen können.
 
 ## Was du bekommst
 
@@ -43,6 +48,14 @@ deinem Repo:
 
 Der Generator ist der Punkt. Was ein LLM heute schreibt, ist beim nächsten
 Commit veraltet. Ein Script im Build ist es nicht.
+
+## Was wir dabei gelernt haben
+
+Eine Site talkable zu machen ist keine Design-Frage, sondern eine Frage, was das
+LLM des Lesers überhaupt abrufen darf. Vier Annahmen sind uns dabei um die Ohren
+geflogen — nachgemessen und aufgeschrieben:
+[Was wir gemessen haben]({{ site.baseurl }}/erkenntnisse/) —
+auch [in English]({{ site.baseurl }}/en/findings/).
 
 ## So fängst du an
 

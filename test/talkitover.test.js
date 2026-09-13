@@ -340,3 +340,27 @@ test('#10 Ein Popover schwebt nicht davon: Scrollen und Größenänderung schlie
   assert.ok(/addEventListener\("scroll"/.test(src), 'Scrollen schließt das Menü')
   assert.ok(/addEventListener\("resize"/.test(src), 'Größenänderung schließt das Menü')
 })
+
+// ─── Die Marke ───────────────────────────────────────────────────────────────
+
+/*
+ * Der Button, das Logo und das Favicon zeigen dieselbe Sprechblase. Sie liegt
+ * dreimal im Repo, weil jede Stelle eine andere Hülle braucht: der Button
+ * inline im Shadow DOM, das Logo als Jekyll-Include, das Favicon als eigene
+ * Datei mit fester Farbe. Drei Zeichnungen driften auseinander — dieser Test
+ * merkt es beim ersten Mal.
+ */
+test('Button, Logo und Favicon zeichnen dieselbe Sprechblase', () => {
+  const paths = (...parts) =>
+    [...fs
+      .readFileSync(path.join(__dirname, '..', ...parts), 'utf8')
+      .matchAll(/\sd="([^"]+)"/g)].map((m) => m[1].replace(/\s+/g, ' ').trim());
+
+  const button = paths('docs', 'talkitover.js');
+  const logo = paths('docs', '_includes', 'logo.svg');
+  const favicon = paths('docs', 'favicon.svg');
+
+  assert.ok(button.length >= 2, 'der Button zeichnet mindestens zwei Pfade');
+  assert.deepEqual([...logo], [...button.slice(0, logo.length)]);
+  assert.deepEqual([...favicon], [...logo]);
+});
