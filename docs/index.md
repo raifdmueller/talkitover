@@ -1,16 +1,16 @@
 ---
 layout: default
 title: Mach deine Site talkable
-description: Ein Button, der deine Seite an den LLM deines Lesers übergibt. Ein Claude-Code-Lauf, ein PR, kein Betrieb.
+description: Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze Site, im Original — und du betreibst nichts.
 ---
 
 <div class="hero">
 {% include logo.svg %}
 
-<h1>Dein Leser hat schon ein LLM. Gib ihm die Seite.</h1>
+<h1>Mach deine Site talkable.</h1>
 
-<p>Ein Button, der deine Site an den LLM deines Lesers übergibt. Du betreibst
-nichts, zahlst nichts und hostest kein Modell.</p>
+<p>Ein Button übergibt sie an den LLM deines Lesers. Die ganze Site, im
+Original — und du betreibst nichts.</p>
 
 <div class="actions">
 <talk-it-over
@@ -22,8 +22,7 @@ nichts, zahlst nichts und hostest kein Modell.</p>
 
 <p class="muted">Kein Mockup: derselbe Button, den
 <a href="https://llm-coding.github.io/Semantic-Anchors/">Semantic Anchors</a>
-ausliefert. Er übergibt die ganze Site — 12 Doku-Seiten, 21 Contracts,
-196 Begriffe.</p>
+ausliefert — 12 Doku-Seiten, 21 Contracts, 196 Begriffe.</p>
 </div>
 
 ## Warum nicht einfach ein Chat-Widget

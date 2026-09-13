@@ -1,7 +1,7 @@
 title: TalkItOver
 description: >-
-  Mach deine Site talkable: ein Button, der die Seite an den LLM des Lesers
-  übergibt. Kein gehostetes LLM, kein Betrieb.
+  Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze Site, im
+  Original — kein gehostetes LLM, kein Betrieb.
 url: https://raifdmueller.github.io
 baseurl: /talkitover
 lang: de
