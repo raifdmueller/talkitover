@@ -3,6 +3,10 @@ layout: default
 permalink: /galerie/
 title: Wo der Button schon steht
 description: Sites, die ihren Inhalt an das LLM ihrer Leser übergeben — mit Rezept, Prompt-Typ und einer wöchentlichen Prüfung, ob sie noch funktionieren.
+lang: de
+translation: /en/gallery/
+translation_lang: en
+translation_label: English
 ---
 
 # Wo der Button schon steht

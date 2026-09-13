@@ -6,6 +6,10 @@
 <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
 <meta name="description" content="{{ page.description | default: site.description | strip_newlines }}">
 <link rel="icon" href="{{ site.baseurl }}/favicon.svg" type="image/svg+xml">
+{%- if page.translation %}
+<link rel="alternate" hreflang="{{ page.lang }}" href="{{ site.url }}{{ site.baseurl }}{{ page.url }}">
+<link rel="alternate" hreflang="{{ page.translation_lang }}" href="{{ site.url }}{{ site.baseurl }}{{ page.translation }}">
+{%- endif %}
 <style>
   :root { color-scheme: light dark; --fg: #222; --bg: #fff; --muted: #666; --rule: #8883;
           --accent: #e5a50a; }
@@ -43,7 +47,9 @@
   <a class="brand" href="{{ site.baseurl }}{{ page.home | default: '/' }}">
     {% include logo.svg %}TalkItOver
   </a>
-  {% if page.translation %}<a class="muted" href="{{ site.baseurl }}{{ page.translation }}">{{ page.translation_label }}</a>{% endif %}
+  {% if page.translation %}<a class="muted lang" hreflang="{{ page.translation_lang }}"
+     href="{{ site.baseurl }}{{ page.translation }}"
+     data-lang="{{ page.translation_lang }}">{{ page.translation_label }}</a>{% endif %}
 </div>
 <main>
 {{ content }}
@@ -53,6 +59,44 @@
   TalkItOver · <a href="https://github.com/raifdmueller/talkitover">Repo</a> ·
   MIT · <a href="{{ site.baseurl }}/prd.adoc">PRD</a>
 </p>
+{%- if page.translation %}
+<script>
+/* Die Sprache des Browsers entscheidet — aber nur beim ersten Mal.
+ *
+ * Wer einmal umschaltet, bleibt dort: Eine Seite, die die Wahl des Lesers bei
+ * jedem Aufruf überstimmt, ist schlimmer als eine, die nur eine Sprache kann.
+ * Ohne JavaScript bleibt die Seite, die der Leser angefragt hat — deutsch ist
+ * die Standardadresse, und beide Fassungen stehen im Kopf als hreflang. */
+(function () {
+  var KEY = 'talkitover.lang'
+  var here = {{ page.lang | jsonify }}
+  var there = {{ page.translation_lang | jsonify }}
+  var link = document.querySelector('a.lang')
+
+  if (link) {
+    link.addEventListener('click', function () {
+      try { localStorage.setItem(KEY, there) } catch (e) { /* privat: vergessen */ }
+    })
+  }
+
+  var chosen = null
+  try { chosen = localStorage.getItem(KEY) } catch (e) { return }
+  if (chosen) return
+
+  var wanted = navigator.languages || [navigator.language || '']
+  for (var i = 0; i < wanted.length; i += 1) {
+    var code = String(wanted[i] || '').slice(0, 2).toLowerCase()
+    if (code === here) return
+    if (code === there) {
+      /* replace, nicht assign: Sonst führt der Zurück-Knopf wieder hierher,
+       * und von hier wieder weg. */
+      location.replace({{ site.baseurl | append: page.translation | jsonify }})
+      return
+    }
+  }
+})()
+</script>
+{%- endif %}
 <script src="{{ site.baseurl }}/talkitover.js"></script>
 </body>
 </html>

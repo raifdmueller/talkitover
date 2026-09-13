@@ -9,7 +9,10 @@
 Die ganze Site, im Original — und du betreibst nichts.
 
 {site}/[Website] · {site}/galerie/[Galerie] ·
-{site}/erkenntnisse/[Was wir gemessen haben] · {site}/en/findings/[English]
+{site}/erkenntnisse/[Was wir gemessen haben]
+
+English: {site}/en/[Website] · {site}/en/gallery/[Gallery] ·
+{site}/en/findings/[What we measured]
 
 toc::[]
 
