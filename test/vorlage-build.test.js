@@ -262,3 +262,87 @@ test('sections trifft den Pfad genau, nicht nur sein Ende', async () => {
   )
   fs.rmSync(dir, { recursive: true })
 })
+
+/*
+ * Jekyll rendert .md — auch ohne Front Matter, auf GitHub Pages immer. Eine
+ * erzeugte Textfassung, die .md heißt, läuft damit ein zweites Mal durch
+ * Liquid. Steht darin ein Liquid-Beispiel, bricht der Bau ab; steht ein
+ * Ausdruck darin, verschwindet er still. Genau das hat einen Deploy gekostet.
+ *
+ * Mit .txt ist die Datei für Jekyll eine statische Datei: kein Liquid, kein
+ * Layout, und text/plain ist abrufbar.
+ */
+test('build kann die Textfassungen unter einer anderen Endung ablegen', async () => {
+  const { build } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  fs.writeFileSync(path.join(dir, 'seite.html'), '<title>Seite</title><main><p>Inhalt.</p></main>')
+
+  const result = build({
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    prose: 'Load {url}.\n\n{pages}\n',
+    extension: '.txt',
+  })
+
+  assert.deepEqual(
+    result.entries.map((e) => e.url),
+    ['https://example.org/text/seite.txt']
+  )
+  assert.equal(fs.existsSync(path.join(dir, 'text', 'seite.txt')), true)
+  assert.equal(fs.existsSync(path.join(dir, 'text', 'seite.md')), false)
+  fs.rmSync(dir, { recursive: true })
+})
+
+test('ohne Angabe bleibt es bei .md, damit bestehende Sites nicht brechen', async () => {
+  const { build } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  fs.writeFileSync(path.join(dir, 'seite.html'), '<title>Seite</title><main><p>Inhalt.</p></main>')
+
+  const result = build({
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    prose: 'Load {url}.\n\n{pages}\n',
+  })
+
+  assert.match(result.entries[0].url, /\.md$/)
+  fs.rmSync(dir, { recursive: true })
+})
+
+/*
+ * Der Bündel-Dateiname muss dieselbe Endung tragen wie die URL im Prompt.
+ * Diese Site erzeugt keine Bündel — der Fehler wäre erst auf der nächsten Site
+ * aufgefallen, und dort als 404 auf einen Link, den der Prompt selbst nennt.
+ */
+test('Bündel liegen unter genau der Adresse, die der Prompt nennt', async () => {
+  const { build } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  for (let i = 0; i < 12; i += 1) {
+    fs.writeFileSync(
+      path.join(dir, `seite-${i}.html`),
+      `<title>Eine Seite mit einem recht langen Titel ${i}</title><main><p>${'Inhalt. '.repeat(50)}</p></main>`
+    )
+  }
+
+  const result = build({
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    prose: 'Load {url}.\n\n{pages}\n',
+    budget: 900,
+    reserve: 0,
+    extension: '.txt',
+  })
+
+  assert.ok(result.bundled.length > 0, 'bei diesem Budget muss gebündelt werden')
+  for (const entry of result.entries) {
+    const name = entry.url.split('/').pop()
+    assert.equal(
+      fs.existsSync(path.join(dir, 'text', name)),
+      true,
+      `${name} wird im Prompt genannt, liegt aber nicht da`
+    )
+  }
+  fs.rmSync(dir, { recursive: true })
+})

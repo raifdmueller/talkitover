@@ -3,7 +3,7 @@
     "name": "TalkItOver",
     "url": "https://raifdmueller.github.io/talkitover/",
     "script": "https://raifdmueller.github.io/talkitover/talkitover.js",
-    "target": "https://raifdmueller.github.io/talkitover/text/index.md",
+    "target": "https://raifdmueller.github.io/talkitover/text/index.txt",
     "prompt": "site@1",
     "recipe": "Rezept Jekyll",
     "since": "2026-09-13",

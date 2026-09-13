@@ -45,6 +45,10 @@ STEP 4 — Install the generator and its configuration.
     root        the BUILT site, usually `_site`
     out         where the text versions go, inside the Jekyll source, e.g.
                 `<source>/text` — Jekyll copies it on the next run
+    extension   `.txt`. NOT `.md`: Pages renders every .md through Liquid, so a
+                text version with that extension runs through Liquid a second
+                time on the next pass. With `.txt` Jekyll treats it as a static
+                file, and text/plain is just as fetchable
     siteUrl     `url` + `baseurl` from _config.yml, with a trailing slash
     sections    the pages that answer a question about the site itself, most
                 important first. Match the path exactly as published, e.g.
