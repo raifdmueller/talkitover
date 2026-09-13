@@ -31,6 +31,24 @@ STEP 1 — Check the preconditions.
   glossary promises a conversation about the site and delivers a corner of it.
   Incomplete -> say which parts are missing before you go on.
 
+  Then check the entries can actually be FETCHED. Pick three and look at the
+  response headers, not just the status:
+
+    Content-Type must be text: text/plain, text/markdown, text/html. A server
+      that does not know an extension declares application/octet-stream — a
+      binary download — and web fetchers refuse it. GitHub Pages does this to
+      .adoc, .rst and .org, among others. Status 200 proves nothing here.
+
+    Size: a few hundred kilobytes is where fetchers start giving up. An entry
+      that carries a whole book is not a link, it is a dead end.
+
+    Redirects: a URL that answers 301 first adds a step that can fail. Link the
+      address that answers directly — usually the one with the trailing slash.
+
+  Entries that fail this -> the index needs to point at a fetchable form of the
+  same content. For a build that already renders, that is one more output
+  format, not new prose. Say so; do not set a button on links that lead nowhere.
+
 STEP 2 — Check the Definition of Done (this is the step that protects the
 maintainer, do not skip it).
 
@@ -94,8 +112,9 @@ STEP 6 — Check your own work, then open the pull request.
     [ ] The diff contains one button, the vendored file, and nothing else.
     [ ] No file contains prose you wrote. No summaries, no generated
         descriptions, no "About this page".
-    [ ] The button's url resolves to the index (fetch it and look), and the
-        entries in it resolve to text.
+    [ ] The button's url resolves to the index (fetch it and look), and three
+        sampled entries answer with a text Content-Type, without a redirect,
+        small enough to read.
     [ ] The site still builds.
 
   Then open a pull request that says, in this order: what the reader gets, which
