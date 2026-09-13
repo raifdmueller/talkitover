@@ -87,34 +87,29 @@ STEP 5 — Two Jekyll runs, in this order.
 
 STEP 6 — Place the button.
 
-  One include, rendered from the data:
+  Download
+  https://raifdmueller.github.io/talkitover/vorlagen/talkitover-include.html
+  and commit it as `_includes/talkitover.html`. Do not retype it: it carries a
+  filter chain that is easy to get subtly wrong, and a guard that matters.
 
-{% raw %}    <talk-it-over
-      url="{{ site.data.talkitover.url }}"
-      prompt="{{ site.data.talkitover.prompt | escape | newline_to_br | replace: '<br />', '&#10;' | strip_newlines }}"
-      data-prompt="site@1"></talk-it-over>{% endraw %}
+  The filter chain turns the prompt into something an HTML attribute survives.
+  A blank line inside an attribute value ends the element in most template
+  pipelines and tears the page apart at exactly that spot.
 
-  The filter chain matters. A blank line inside an HTML attribute ends the
-  element in most template pipelines and tears the page apart at exactly that
-  spot; `&#10;` survives, and the browser decodes it before the component reads
-  the attribute.
+  The guard skips the button when the data file is missing. Without it, a build
+  that skipped the generator renders a button with empty attributes — worse
+  than no button, because it looks like it works.
 
-  Wrap the include in {% raw %}`{% if site.data.talkitover %}`{% endraw %}. Without it, a build that
-  skipped the generator renders a button with empty attributes — worse than no
-  button, because it looks like it works.
+  Then include it where a reader arrives and decides what to do: the start page
+  near the headline, or a header every page shares. One button for the whole
+  site.
 
-  Put it where a reader arrives and decides what to do: the start page near the
-  headline, or a header every page shares. One button for the whole site.
-
-  A warning paid for in a broken deploy: GitHub Pages renders Liquid even in
-  files that have no front matter — jekyll-optional-front-matter is on by
-  default there and cannot be switched off. A local `jekyll build` does not, so
-  a file that merely SHOWS Liquid passes locally and breaks the deploy.
-
-  So wrap every Liquid sample you publish in a raw block. An output expression
-  is the worse of the two: a malformed tag fails loudly, while an expression
-  renders to nothing at all — the published file then shows an empty attribute,
-  and the reader copies that.
+  A warning paid for in a broken deploy: GitHub Pages renders Liquid in files
+  that have no front matter — jekyll-optional-front-matter is on by default
+  there and cannot be switched off. A local `jekyll build` does not. So a file
+  that merely SHOWS Liquid can pass locally and break the deploy. Keep Liquid
+  samples out of your documentation and ship them as files, the way this recipe
+  ships the include above.
 
 STEP 7 — Check your own work, then open the pull request.
 
@@ -129,9 +124,8 @@ STEP 7 — Check your own work, then open the pull request.
         it — the component fills that in, not Jekyll.
     [ ] Every URL in the prompt answers 200 with a text Content-Type.
     [ ] The provider URL stays under 6000 characters.
-    [ ] Liquid that you PUBLISH as a sample sits in a raw block, and the
-        deployed file still shows it verbatim. Check the deployed file, not the
-        local build — they differ.
+    [ ] No documentation file you added contains Liquid. Check the DEPLOYED
+        file, not the local build — they differ.
 
   Then open a pull request that says, in this order: what the reader gets, which
   files changed, that nothing has to be operated, and how to undo it. Name the

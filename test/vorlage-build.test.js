@@ -346,3 +346,42 @@ test('Bündel liegen unter genau der Adresse, die der Prompt nennt', async () =>
   }
   fs.rmSync(dir, { recursive: true })
 })
+
+/*
+ * Der Include liegt zweimal im Repo: als Vorlage, die fremde Sites
+ * herunterladen, und als der Include, den diese Site selbst benutzt. Zwei
+ * Fassungen driften auseinander — und dann liefert das Rezept etwas anderes
+ * aus, als hier nachweislich funktioniert.
+ */
+test('die ausgelieferte Include-Vorlage und der eigene Include tun dasselbe', () => {
+  const read = (...parts) =>
+    fs.readFileSync(path.join(__dirname, '..', ...parts), 'utf8')
+  // Der Kommentarkopf unterscheidet sich bewusst: die Vorlage nennt Herkunft
+  // und Lizenz. Verglichen wird, was Jekyll ausführt.
+  const code = (text) => text.replace(/\{%-?\s*comment[\s\S]*?endcomment\s*-?%\}/, '').trim()
+
+  assert.equal(
+    code(read('docs', '_includes', 'talkitover.html')),
+    code(read('docs', 'vorlagen', 'talkitover-include.html'))
+  )
+})
+
+/*
+ * GitHub Pages führt Liquid auch in Dateien ohne Front Matter aus. Ein
+ * Liquid-Beispiel in einem Rezept hat damit schon einmal den Deploy zerrissen —
+ * und schlimmer: Claude Code liest diese Dateien und würde die Schutzmarken
+ * mitkopieren.
+ */
+test('in Rezepten und Prompts steht kein Liquid', () => {
+  const dir = path.join(__dirname, '..', 'docs')
+  const files = [
+    ...fs.readdirSync(path.join(dir, 'rezepte')).map((f) => ['rezepte', f]),
+    ...fs.readdirSync(path.join(dir, 'prompts')).map((f) => ['prompts', f]),
+    ['einstieg.md'],
+  ]
+
+  for (const parts of files) {
+    const text = fs.readFileSync(path.join(dir, ...parts), 'utf8')
+    assert.doesNotMatch(text, /\{%|\{\{/, `${parts.join('/')} enthält Liquid`)
+  }
+})
