@@ -1,6 +1,6 @@
 title: TalkItOver
 description: >-
-  Ein Button übergibt deine Site an den LLM deines Lesers. Die ganze Site, im
+  Ein Button übergibt deine Site an das LLM deines Lesers. Die ganze Site, im
   Original — kein gehostetes LLM, kein Betrieb.
 url: https://raifdmueller.github.io
 baseurl: /talkitover
