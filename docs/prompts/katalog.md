@@ -1,14 +1,15 @@
 # Content-Typ „Katalog"
 
-Version: katalog@2
+Version: katalog@3
 
 Für Index-Seiten: `llms.txt` nach Konvention, Inhaltsverzeichnisse, Anchor- und
 Begriffslisten. Der Leser will nicht den Index besprechen, sondern über ihn
 zu den zwei, drei Seiten finden, die seine Frage beantworten.
 
-Das Rezept nimmt **den Inhalt des ersten Codeblocks** dieser Datei, setzt ihn
-als `prompt`-Attribut in den Button und schreibt `data-prompt="katalog@2"`
-daneben.
+Das Rezept nimmt **den Inhalt des ersten Codeblocks** dieser Datei, ersetzt
+`{pages}` durch die Seitenliste der Site (Schritt 5 des Rezepts), setzt das
+Ergebnis als `prompt`-Attribut in den Button und schreibt
+`data-prompt="katalog@3"` daneben.
 
 **Die Bedingung dahinter:** Der Button darf nur auf einen Index zeigen, der aus
 Links besteht — eine Liste von Einträgen mit URL. Zeigt er auf eine Datei, die
@@ -17,6 +18,24 @@ dem, was zufällig noch im Fenster stand. Groß und vollständig ist hier
 schlechter als klein und verzweigt. Rezept 0 prüft das, bevor es den Button
 setzt.
 
+**Was katalog@3 gegenüber @2 gelernt hat:** Der Index allein öffnet die Site
+nicht. Gemessen am 13.09.2026 auf Semantic Anchors: Das LLM des Lesers holt eine
+URL, die in der Nachricht stand, die es bekommen hat. Eine URL, die es nur *in*
+einem geholten Dokument gefunden hat, verweigert es — „not in any prior search
+or fetch result", gleich ob die Datei als `text/plain`, `text/markdown` oder
+HTML ausgeliefert wird. Es ist also kein Format-Problem, sondern eine Regel über
+die Herkunft.
+
+Was der Prompt nennt, ist erreichbar. Was er auslässt, vielleicht nicht. Deshalb
+trägt der Prompt jetzt die eigenen Seiten der Site; der Index bleibt die Karte
+für die lange Liste, die nicht hineinpasst. Für einen verweigerten Abruf steht
+der Ausweg im Prompt: das LLM soll den Leser bitten, die URL einzufügen.
+
+Suchen wäre der andere Weg gewesen und fiel in der Messung durch: Vier Suchen
+gegen dieselbe Site lieferten fünf ihrer 459 Seiten, keinen einzigen Begriff
+darunter, und beantworteten die Frage stattdessen aus heise und zwei fremden
+Blogs. Die Herkunftsregel war erfüllt, die Treue zur Quelle war weg.
+
 **Was katalog@2 gegenüber @1 gelernt hat:** Ein Leser fragte nach einem Thema,
 zu dem die Site drei Doku-Seiten hat — und bekam eine Antwort allein aus dem
 Begriffskatalog. Das LLM hatte den längsten Abschnitt des Index für den ganzen
@@ -24,19 +43,27 @@ Index gehalten. Und als zwei Abrufe scheiterten, suchte es still im Web weiter,
 statt es zu sagen. Beides steht jetzt im Prompt.
 
 ```
-Load {url}. It is an index of what one site publishes, not the content itself:
-every entry links to a page or a file.
+Load {url}. It is an index of what one site publishes, not the content
+itself: every entry links to a page or a file.
 
-Read the whole index before you decide anything. It holds more than one kind of
-entry — pages about the project, reference terms, whatever else the site keeps —
-and the longest section is not automatically the one that answers me.
+Read the whole index before you decide anything. It holds more than one kind
+of entry — pages about the project, reference terms, whatever else the site
+keeps — and the longest section is not automatically the one that answers me.
+
+Your fetch tool may refuse a link it only found inside that index. So here
+are the pages of the site in full, and you may fetch any of them directly:
+
+{pages}
+
+For the rest the index stays the map: it lists each entry with its URL. If a
+fetch of one is refused, say so and ask me to paste the URL. I will paste it,
+and then you can read it.
 
 Ask me what I am looking for before you fetch anything.
 
-Then fetch the entries that match, read them, and answer from what you read.
-Keep it short and name the entry each answer came from.
+Then fetch what matches, read it, and answer from what you read. Keep it
+short and name the entry each answer came from.
 
-If an entry will not load, say so plainly instead of working around it. If
-nothing in the index fits, say that — do not answer from memory and do not go
+If nothing here fits, say that — do not answer from memory and do not go
 looking elsewhere.
 ```

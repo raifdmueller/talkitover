@@ -1,4 +1,4 @@
-TalkItOver — Recipe 0: "already LLM-readable" (v2)
+TalkItOver — Recipe 0: "already LLM-readable" (v3)
 Applies when the sources are Markdown or AsciiDoc and the index comes from the
 build. Nothing is generated here — you add ONE button that hands the site's
 index to the reader's own LLM.
@@ -75,7 +75,7 @@ STEP 4 — Place the one button.
   floating.
 
   <script src="PATH/talkitover.js"></script>
-  <talk-it-over url="FULL-URL-OF-THE-INDEX" prompt="..." data-prompt="katalog@2"></talk-it-over>
+  <talk-it-over url="FULL-URL-OF-THE-INDEX" prompt="..." data-prompt="katalog@3"></talk-it-over>
 
   The url attribute names the index by a FULL URL with scheme and host. The
   reader's LLM receives nothing but the prompt text: a path like /llms.txt has
@@ -93,6 +93,36 @@ STEP 5 — Fetch the content-type prompt.
 
   Fetch that file and take the content of its FIRST fenced code block, verbatim,
   as the prompt attribute. Write the version from its header into data-prompt.
+
+  The block contains one placeholder, {pages}. Replace it with the site's own
+  pages, one per line, as "- Title: FULL-URL". Take them from the index, from
+  the same section the index lists them in — not from the navigation, and not by
+  visiting the site and writing your own titles.
+
+  Why the prompt repeats what the index already says: the reader's LLM fetches a
+  URL that stood in the message it was given, and refuses one it only found
+  inside a document it fetched. Measured on Semantic Anchors, 13.09.2026, with
+  text/plain, text/markdown and HTML alike — the format makes no difference, the
+  provenance does. An index of links therefore lists the site without opening
+  it. Whatever the prompt names is reachable; whatever it omits may not be.
+
+  Which pages go in: the ones a question about the project lands on — the
+  documentation, the guides, the whole-site bundles. NOT the long reference list
+  (anchors, glossary entries, API symbols). Those stay in the index, and the
+  prompt tells the LLM to ask the reader to paste a URL when a fetch is refused.
+
+  Then check the budget. Build the provider URL the component would build:
+
+    "https://claude.ai/new?q=" + encodeURIComponent(prompt-with-{url}-filled)
+
+  Under 6000 characters -> the button stays one click. Over it -> every provider
+  falls back to the clipboard and the reader has to paste. Then shorten: drop
+  the titles before you drop a page, and drop pages before you drop the rule
+  about refused fetches. Say in the pull request which pages you left out.
+
+  Write the check into the site's test suite if it has one, against the ceiling
+  in the vendored talkitover.js rather than against a number you typed. The list
+  grows; the budget does not.
 
   Put the prompt on ONE physical line and write its line breaks as &#10; — a
   blank line inside an HTML attribute ends the HTML block in most Markdown
@@ -115,6 +145,8 @@ STEP 6 — Check your own work, then open the pull request.
     [ ] The button's url resolves to the index (fetch it and look), and three
         sampled entries answer with a text Content-Type, without a redirect,
         small enough to read.
+    [ ] Every URL you wrote into {pages} answers 200 without a redirect.
+    [ ] The provider URL stays under 6000 characters.
     [ ] The site still builds.
 
   Then open a pull request that says, in this order: what the reader gets, which
