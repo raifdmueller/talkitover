@@ -1,0 +1,116 @@
+= TalkItOver
+:toc: macro
+:toclevels: 2
+:icons: font
+:sectanchors:
+:site: https://raifdmueller.github.io/talkitover
+
+*Mach deine Site talkable.* Ein Button übergibt sie an den LLM deines Lesers.
+Die ganze Site, im Original — und du betreibst nichts.
+
+{site}/[Website] · {site}/erkenntnisse/[Was wir gemessen haben] ·
+{site}/en/findings/[English]
+
+toc::[]
+
+== Was das ist
+
+Dein Leser bringt sein LLM mit. Deine Site reicht ihm den Inhalt. Du hostest
+kein Modell, zahlst keine Token und siehst nie, was er fragt.
+
+Konkret: ein Web Component von 12 KB, das du in dein Repo kopierst, und ein
+Generator, der aus deinen Inhalten Textfassungen und den Prompt baut. Ein Klick
+öffnet Claude oder ChatGPT mit einem Prompt, der deine Seiten benennt — und das
+Gespräch beginnt mit einer Frage an den Leser, nicht mit einer Zusammenfassung.
+
+Nichts davon läuft zur Laufzeit gegen diese Site. Der Button funktioniert
+weiter, wenn es uns nicht mehr gibt.
+
+== Loslegen
+
+. {site}/einstieg.md[Einstiegs-Prompt] kopieren.
+. In Claude Code einfügen, im Repo deiner Site.
+. Pull Request reviewen und mergen.
+
+Claude Code erkennt den Generator deiner Site selbst und wählt das passende
+Rezept. Ist er nicht eindeutig, fragt es. Kennt es ihn nicht, bricht es ab und
+sagt warum — es improvisiert nicht.
+
+== Was im Repo liegt
+
+[cols="1,3"]
+|===
+|Pfad |Inhalt
+
+|`docs/talkitover.js`
+|Das Web Component, Version 1.0.7. Vendored, nie vom CDN geladen.
+
+|`docs/einstieg.md`
+|Der Prompt, mit dem alles anfängt: Generator erkennen, Rezept holen.
+
+|`docs/rezepte/`
+|Rezept 0 (Quellen schon LLM-lesbar) und Rezept 1 (statisches HTML ohne
+Generator). Jedes mit Abbruchkriterien — ein klarer Stopp schlägt eine halb
+talkable Site.
+
+|`docs/prompts/`
+|Die Content-Typ-Prompts: `referenz@1` für eine Seite, `katalog@3` für eine
+Site mit Index, `site@1` für eine Site ohne.
+
+|`docs/vorlagen/`
+|Der Generator aus Rezept 1. Liest die HTML-Dateien, schreibt Textfassungen,
+misst das Budget und baut den Prompt.
+
+|`docs/prd.adoc`
+|Das PRD mit den Entscheidungen E1–E8.
+
+|`test/`
+|38 Tests, ohne Abhängigkeiten. Dazu `check:demo`, der den Demo-Button gegen
+die Site prüft, auf die er zeigt.
+|===
+
+== Warum es so gebaut ist
+
+Beim Talkable-Machen der ersten Site sind vier Annahmen gefallen. Die
+wichtigste:
+
+[quote]
+____
+Das LLM des Lesers holt eine URL, die *in der Nachricht stand*, die es bekommen
+hat. Eine URL, die es nur _in_ einem geholten Dokument gefunden hat, verweigert
+es.
+____
+
+Geprüft als `text/plain`, `text/markdown` und HTML mit echten `<a href>` —
+identische Verweigerung. Kein Format-Problem, sondern eine Regel über die
+Herkunft. Ein Index aus Links listet eine Site also, ohne sie aufzuschließen;
+die Adressen müssen in den Prompt.
+
+Das erklärt fast alles am Aufbau: warum der Generator die Seiten benennt, warum
+er das URL-Budget misst statt zu raten, und warum lange Inhalte gebündelt
+werden, statt verlinkt.
+
+Der Rest steht auf {site}/erkenntnisse/[Was wir gemessen haben] —
+mit den Zahlen, und mit dem, was noch ungemessen ist.
+
+== Entwicklung
+
+[source,bash]
+----
+npm test              # 38 Tests, keine Abhängigkeiten
+npm run check:demo    # prüft den Demo-Button gegen die Site, auf die er zeigt
+----
+
+Die Website ist Jekyll aus `docs/`, gebaut von GitHub Pages:
+
+[source,bash]
+----
+jekyll build -s docs -d _site
+----
+
+Rezepte und Prompts tragen bewusst kein Front Matter. Jekyll kopiert sie
+dadurch unverändert — Claude Code bekommt Rohtext, keine HTML-Hülle.
+
+== Lizenz
+
+MIT. Siehe link:LICENSE[LICENSE].
