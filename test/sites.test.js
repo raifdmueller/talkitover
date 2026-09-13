@@ -18,6 +18,9 @@ const entry = (over = {}) => ({
   target: 'https://example.org/index.md',
   prompt: 'site@1',
   recipe: 'Rezept 1',
+  recipe_en: 'Recipe 1',
+  note: 'Eine Site.',
+  note_en: 'A site.',
   since: '2026-01-01',
   ...over,
 })

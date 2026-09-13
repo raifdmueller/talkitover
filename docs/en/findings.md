@@ -4,7 +4,9 @@ permalink: /en/findings/
 title: What we measured
 description: Why an index of links opens nothing, what fits through a provider URL, and which assumptions we disproved while building.
 lang: en
+home: /en/
 translation: /erkenntnisse/
+translation_lang: de
 translation_label: Deutsch
 ---
 

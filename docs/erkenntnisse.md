@@ -5,6 +5,7 @@ title: Was wir gemessen haben
 description: Warum ein Index aus Links nichts öffnet, was durch eine Provider-URL passt, und welche Annahmen wir beim Bauen widerlegt haben.
 lang: de
 translation: /en/findings/
+translation_lang: en
 translation_label: English
 ---
 

@@ -14,7 +14,12 @@
 const path = require('node:path')
 
 /** Ohne diese Felder lässt sich ein Eintrag weder zeigen noch prüfen. */
-const REQUIRED = ['name', 'url', 'script', 'target', 'prompt', 'recipe', 'since']
+const REQUIRED = [
+  'name', 'url', 'script', 'target', 'prompt', 'since',
+  // Beide Sprachen, sonst steht der Eintrag auf einer der beiden Galerie-Seiten
+  // halb übersetzt — und niemand sieht es, der die andere liest.
+  'recipe', 'recipe_en', 'note', 'note_en',
+]
 
 const ABSOLUTE = ['url', 'script', 'target']
 

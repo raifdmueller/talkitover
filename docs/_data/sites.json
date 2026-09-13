@@ -7,7 +7,9 @@
     "prompt": "site@1",
     "recipe": "Rezept Jekyll",
     "since": "2026-09-13",
-    "note": "Diese Site, durch ihr eigenes Rezept. Der Button übergibt die Rezepte, die Prompts und die Erkenntnisse — frag ihn, wie du anfängst."
+    "note": "Diese Site, durch ihr eigenes Rezept. Der Button übergibt die Rezepte, die Prompts und die Erkenntnisse — frag ihn, wie du anfängst.",
+    "recipe_en": "Recipe Jekyll",
+    "note_en": "This site, through its own recipe. The button hands over the recipes, the prompts and the findings — ask it how to start."
   },
   {
     "name": "Semantic Anchors",
@@ -17,7 +19,9 @@
     "prompt": "katalog@3",
     "recipe": "Rezept 0",
     "since": "2026-09-13",
-    "note": "Ein Katalog aus 196 Begriffen, 21 Contracts und 12 Doku-Seiten. Der Prompt nennt die Seiten und zwanzig Bündel."
+    "note": "Ein Katalog aus 196 Begriffen, 21 Contracts und 12 Doku-Seiten. Der Prompt nennt die Seiten und zwanzig Bündel.",
+    "recipe_en": "Recipe 0",
+    "note_en": "A catalogue of 196 terms, 21 contracts and 12 documentation pages. The prompt names the pages and twenty bundles."
   },
   {
     "name": "Ralf D. Müller",
@@ -27,6 +31,8 @@
     "prompt": "site@1",
     "recipe": "Rezept 1",
     "since": "2026-09-13",
-    "note": "Eine persönliche Website ohne Generator. 43 HTML-Seiten wurden zu Textfassungen, 32 nennt der Prompt einzeln."
+    "note": "Eine persönliche Website ohne Generator. 43 HTML-Seiten wurden zu Textfassungen, 32 nennt der Prompt einzeln.",
+    "recipe_en": "Recipe 1",
+    "note_en": "A personal website with no generator at all. 43 HTML pages became text versions; the prompt names 32 of them individually."
   }
 ]

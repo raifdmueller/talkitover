@@ -2,6 +2,10 @@
 layout: default
 title: Mach deine Site talkable
 description: Ein Button übergibt deine Site an das LLM deines Lesers. Die ganze Site, im Original — und du betreibst nichts.
+lang: de
+translation: /en/
+translation_lang: en
+translation_label: English
 ---
 
 <div class="hero">
@@ -57,8 +61,7 @@ Lauf prüft, ob sie noch funktionieren.
 Eine Site talkable zu machen ist keine Design-Frage, sondern eine Frage, was das
 LLM des Lesers überhaupt abrufen darf. Vier Annahmen sind uns dabei um die Ohren
 geflogen — nachgemessen und aufgeschrieben:
-[Was wir gemessen haben]({{ site.baseurl }}/erkenntnisse/) —
-auch [in English]({{ site.baseurl }}/en/findings/).
+[Was wir gemessen haben]({{ site.baseurl }}/erkenntnisse/).
 
 ## So fängst du an
 
