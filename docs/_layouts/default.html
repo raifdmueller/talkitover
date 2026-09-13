@@ -1,14 +1,16 @@
 <!doctype html>
-<html lang="{{ site.lang | default: 'de' }}">
+<html lang="{{ page.lang | default: site.lang | default: 'de' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
 <meta name="description" content="{{ page.description | default: site.description | strip_newlines }}">
+<link rel="icon" href="{{ site.baseurl }}/favicon.svg" type="image/svg+xml">
 <style>
-  :root { color-scheme: light dark; --fg: #222; --bg: #fff; --muted: #666; --rule: #8883; }
+  :root { color-scheme: light dark; --fg: #222; --bg: #fff; --muted: #666; --rule: #8883;
+          --accent: #e5a50a; }
   @media (prefers-color-scheme: dark) { :root { --fg: #e8e8e8; --bg: #161616; --muted: #9a9a9a; } }
-  body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 0 auto; padding: 3rem 1.25rem;
+  body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 0 auto; padding: 2rem 1.25rem 3rem;
          line-height: 1.6; color: var(--fg); background: var(--bg); }
   h1 { font-size: 1.6rem; font-weight: 600; line-height: 1.25; }
   h2 { font-size: 1.15rem; font-weight: 600; margin-top: 2.5rem; }
@@ -19,9 +21,30 @@
   .actions { margin: 1.75rem 0; }
   table { border-collapse: collapse; width: 100%; }
   td, th { border-bottom: 1px solid var(--rule); padding: .5rem .6rem; text-align: left; vertical-align: top; }
+
+  /* The site wordmark, small — the hero below carries the big one. */
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+         margin-bottom: 2.5rem; }
+  .brand { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
+           font-weight: 600; letter-spacing: -.01em; }
+  .brand svg { width: 1.5rem; height: 1.5rem; }
+
+  /* The hero says what this is before anything scrolls. */
+  .hero { text-align: center; margin: 0 0 3rem; }
+  .hero svg { width: clamp(5rem, 18vw, 7.5rem); height: auto; color: var(--fg); }
+  .hero h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); margin: 1rem 0 .5rem; text-wrap: balance; }
+  .hero p { font-size: 1.05rem; color: var(--muted); margin: 0 auto; max-width: 32rem;
+            text-wrap: pretty; }
+  .hero .actions { display: flex; justify-content: center; margin-top: 2rem; }
 </style>
 </head>
 <body>
+<div class="bar">
+  <a class="brand" href="{{ site.baseurl }}{{ page.home | default: '/' }}">
+    {% include logo.svg %}TalkItOver
+  </a>
+  {% if page.translation %}<a class="muted" href="{{ site.baseurl }}{{ page.translation }}">{{ page.translation_label }}</a>{% endif %}
+</div>
 <main>
 {{ content }}
 </main>

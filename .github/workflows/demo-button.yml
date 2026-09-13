@@ -1,0 +1,23 @@
+# Der Demo-Prompt auf der Startseite ist eine Kopie: Die Site hat keinen
+# Build-Schritt, der ihn von Semantic Anchors holen könnte. Kopien veralten —
+# Rezept 0 warnt in Schritt 2 vor genau dieser Sorte Liste. Also prüft ein
+# wöchentlicher Lauf, ob die Gegenseite sich bewegt hat.
+#
+# Nicht in test.yml, weil der Lauf ins Netz greift: ein Ausfall dort darf
+# keinen fremden Pull Request rot machen.
+name: Demo-Button
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check:demo
