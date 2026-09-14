@@ -83,7 +83,7 @@ STEP 5 — Let the generator choose the shape, and write the button.
   not floating. One button for the whole site, never one per page.
 
     <script src="PATH/talkitover.js"></script>
-    <talk-it-over url="RETURNED url" prompt="RETURNED prompt" data-prompt="site@1"></talk-it-over>
+    <talk-it-over url="RETURNED url" prompt="RETURNED prompt" data-prompt="site@2"></talk-it-over>
 
   Put the prompt on ONE physical line and write its line breaks as &#10;, its
   ampersands as &amp; — a blank line inside an HTML attribute ends the element

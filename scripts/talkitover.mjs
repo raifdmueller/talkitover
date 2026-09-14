@@ -60,7 +60,7 @@ const result = build({
 
 fs.writeFileSync(
   path.join(ROOT, 'docs', '_data', 'talkitover.json'),
-  `${JSON.stringify({ url: result.url, prompt: result.prompt, version: 'site@1', length: result.length }, null, 2)}\n`,
+  `${JSON.stringify({ url: result.url, prompt: result.prompt, version: 'site@2', length: result.length }, null, 2)}\n`,
   'utf-8'
 )
 

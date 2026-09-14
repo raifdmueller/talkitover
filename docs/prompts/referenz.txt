@@ -1,17 +1,25 @@
 # Content-Typ „Referenz"
 
-Version: referenz@1
+Version: referenz@2
 
 Für Seiten, die man nachschlägt: Anchors, Glossare, Templates, API-Referenzen.
 Der Leser will eine Auskunft und die Stelle, an der sie steht – keine
 Zusammenfassung der Seite.
 
 Das Rezept nimmt **den Inhalt des ersten Codeblocks** dieser Datei, setzt ihn
-als `prompt`-Attribut in den Button und schreibt `data-prompt="referenz@1"`
+als `prompt`-Attribut in den Button und schreibt `data-prompt="referenz@2"`
 daneben. Ändert sich der Text sinnverändernd, steigt die Versionsnummer.
 
 Die Prompts sind auf Englisch. Sie landen beim Leser, und die Ziel-Sites sind
-international. Übersetzungen kommen später als `referenz.de.md`.
+international. Übersetzungen kommen später als `referenz.de.txt`.
+
+**Was referenz@2 gegenüber @1 gelernt hat:** Die Regel „antworte nicht aus dem
+Gedächtnis und such nicht woanders" sollte heißen: *erfinde nichts über diese
+Site*. Ein Leser las sie als Maulkorb für das ganze Gespräch und bekam auf eine
+Frage über die Welt die Auskunft, unser Prompt verbiete das Nachschlagen. An
+ihrer Stelle steht jetzt eine Zuordnungspflicht: Alle drei Quellen sind
+willkommen — diese Site, anderswo Nachgeschlagenes, das eigene Wissen des
+Modells. Verboten ist nur, dass eine für eine andere durchgeht.
 
 ```
 Load {url}. It is a reference page, and I want to use it — not have it summarised.
