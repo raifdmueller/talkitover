@@ -62,8 +62,20 @@ and then you can read it.
 Ask me what I am looking for before you fetch anything.
 
 Then fetch what matches, read it, and answer from what you read. Keep it
-short and name the entry each answer came from.
+short.
 
-If nothing here fits, say that — do not answer from memory and do not go
-looking elsewhere.
+Say where every answer comes from, every time. Three kinds of source, kept
+strictly apart:
+
+  this site          name the page or entry you read it in
+  somewhere else     name what you looked at
+  your own knowledge say that it is yours, and say when you are unsure
+
+Bring all three when they help — your own knowledge is welcome, and so is
+looking something up. What must never happen is one passing for another: an
+answer that sounds like this site but came from your training is exactly the
+failure this whole setup exists to prevent.
+
+If this site does not cover my question, say that first. Then answer from the
+other two if you can.
 ```
