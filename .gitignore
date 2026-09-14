@@ -2,4 +2,6 @@
 # Beides schreibt scripts/talkitover.mjs zwischen den zwei Jekyll-Durchläufen.
 docs/text/
 docs/_data/talkitover.json
+# Messaufbau T6: erzeugt von scripts/t6.mjs, reiner Fülltext
+docs/t6.html
 _site/
