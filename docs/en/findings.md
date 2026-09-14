@@ -87,6 +87,17 @@ the trigger for an invented answer.**
 That is why every file a prompt names here ends in `.txt`. Both providers read
 `text/plain`; only one reads `text/markdown`.
 
+**That this was the cause shows in the same question asked after the switch.**
+Same file, same wording, only the extension changed:
+
+| | ChatGPT answered |
+|---|---|
+| as `.md` | **YAGNI** — pieced together from the web, wrong file |
+| as `.txt` | **Postel's Law** — right, read from the file |
+
+One character in the extension decides whether a reader gets the content or
+something invented about it.
+
 ## The architecture stands. Its reasoning was the wrong one
 
 Everything in the prompt, depth 1, bundles instead of an index — that stays. But
@@ -252,8 +263,9 @@ Going higher would be possible — we do not: the gain would be one or two fewer
 entries in the prompt, the stake a file we would again have to guess about.
 Truncation is silent. Half a file reads like a whole one.
 
-For ChatGPT the number is still open. There the fetch failed at the content type,
-before length could matter.
+For ChatGPT the number was open for a long time, because the fetch failed at the
+content type first. Since everything is `.txt` it is measurable — the same 61 KB
+arrived whole there too.
 
 ## The limit is not the provider's but the reader's browser
 
@@ -289,9 +301,8 @@ costs every reader the one-click path and forces bundling that was never needed.
 
 ## What is still open
 
-The truncation limit for ChatGPT. There the fetch failed at the content type
-before length could matter. For Claude it is around 100 KB, see above.
+The limit of the browsers we did not measure. It is not measurable — we do not
+know the reader's browser, which is why `MAX_URL_LENGTH` sits with a margin
+rather than at the edge.
 
-And the limit of the browsers we did not measure. It is not measurable — we do
-not know the reader's browser, which is why the value sits with a margin rather
-than at the edge.
+That is all. Every other number on this page came out of a test.

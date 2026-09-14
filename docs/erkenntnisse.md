@@ -89,6 +89,17 @@ es ist der Auslöser für eine erfundene Antwort.**
 Deshalb heißt jede Datei, die ein Prompt nennt, hier `.txt`. `text/plain` lesen
 beide Anbieter; `text/markdown` liest nur einer.
 
+**Dass das die Ursache war, zeigt dieselbe Frage nach der Umstellung.** Dieselbe
+Datei, derselbe Wortlaut, nur die Endung geändert:
+
+| | ChatGPT antwortete |
+|---|---|
+| als `.md` | **YAGNI** — aus dem Netz zusammengesucht, falsche Datei |
+| als `.txt` | **Postel's Law** — richtig, aus der Datei gelesen |
+
+Ein Zeichen in der Endung entscheidet, ob ein Leser den Inhalt bekommt oder
+etwas darüber Erfundenes.
+
 ## Die Architektur steht. Ihre Begründung war die falsche
 
 Alles in den Prompt, Tiefe 1, Bündel statt Index — das bleibt. Aber nicht mehr,
@@ -257,8 +268,9 @@ bis zwei Einträge weniger im Prompt, der Einsatz eine Datei, von der wir dann
 wieder raten müssten, ob sie ankommt. Abschneiden ist still. Eine halbe Datei
 liest sich wie eine ganze.
 
-Für ChatGPT ist die Zahl weiter offen. Dort scheiterte der Abruf schon am
-Content-Type, bevor die Länge eine Rolle spielte.
+Für ChatGPT war die Zahl lange offen, weil der Abruf schon am Content-Type
+scheiterte. Seit alles `.txt` heißt, ist sie messbar — dieselben 61 KB kamen
+auch dort vollständig an.
 
 ## Nicht der Anbieter setzt die Grenze, sondern der Browser des Lesers
 
@@ -296,10 +308,8 @@ und erzwingt Bündelung, die nicht nötig wäre.
 
 ## Was offen ist
 
-Die Abschneidegrenze für ChatGPT. Dort scheiterte der Abruf am Content-Type,
-bevor die Länge eine Rolle spielte. Für Claude liegt sie bei rund 100 KB, siehe
-oben.
+Die Grenze der Browser, die wir nicht gemessen haben. Sie ist nicht messbar — wir
+kennen den Browser des Lesers nicht, und deshalb steht `MAX_URL_LENGTH` mit
+Abstand statt an der Kante.
 
-Und die Grenze der Browser, die wir nicht gemessen haben. Sie ist nicht
-messbar — wir kennen den Browser des Lesers nicht, und deshalb steht der Wert
-mit Abstand statt an der Kante.
+Das ist alles. Jede andere Zahl auf dieser Seite kommt aus einem Versuch.
