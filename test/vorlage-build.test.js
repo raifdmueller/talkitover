@@ -111,7 +111,7 @@ test('chooseShape bündelt erst, wenn das Budget es erzwingt', async () => {
   )
   const entryOf = {
     page: (p) => ({ title: p.title, url: `https://example.org/text/${p.url.slice(-8)}.md` }),
-    bundle: (_, i) => ({ title: `Weitere ${i + 1}`, url: `https://example.org/text/b-${i + 1}.md` }),
+    bundle: (b, i) => ({ title: b.title, url: `https://example.org/text/b-${i + 1}.md` }),
   }
 
   const weit = chooseShape(pages, { prose, budget: 100000, reserve: 0, entryOf })
@@ -139,12 +139,12 @@ test('chooseShape verliert keine Seite, bei welchem Budget auch immer', async ()
   )
   const entryOf = {
     page: (p) => ({ title: p.title, url: p.url }),
-    bundle: (_, i) => ({ title: `B${i}`, url: `https://example.org/b${i}.md` }),
+    bundle: (b, i) => ({ title: b.title, url: `https://example.org/b${i}.md` }),
   }
 
   for (const budget of [300, 600, 900, 1500, 3000, 20000]) {
     const { named, bundled } = chooseShape(pages, { prose, budget, reserve: 0, entryOf })
-    const seen = [...named, ...bundled.flat()].map((p) => p.url).sort()
+    const seen = [...named, ...bundled.flatMap((b) => b.pages)].map((p) => p.url).sort()
     assert.deepEqual(seen, pages.map((p) => p.url).sort(), `Budget ${budget}`)
   }
 })
@@ -384,4 +384,108 @@ test('in Rezepten und Prompts steht kein Liquid', () => {
     const text = fs.readFileSync(path.join(dir, ...parts), 'utf8')
     assert.doesNotMatch(text, /\{%|\{\{/, `${parts.join('/')} enthält Liquid`)
   }
+})
+
+/*
+ * Auf einer Site mit 184 Seiten entstanden 38 Bündel, viele mit einer einzigen
+ * Seite, und alle hießen "Weitere Seiten 17". Das LLM kann daraus nicht wählen:
+ * Es sieht Adressen ohne Bedeutung.
+ *
+ * Also wird vor dem Packen nach einer natürlichen Grenze partitioniert — meist
+ * dem Verzeichnis. Dann heißt ein Bündel "Handbuch" und nicht "Bündel 17".
+ */
+const group = (title, url, text, g) => ({ title, url, text, group: g })
+
+test('packGroups mischt keine zwei Gruppen in ein Bündel', async () => {
+  const { packGroups } = await load()
+  const pages = [
+    group('A1', '/a1', 'x'.repeat(10), 'Handbuch'),
+    group('B1', '/b1', 'x'.repeat(10), 'Tutorial'),
+    group('A2', '/a2', 'x'.repeat(10), 'Handbuch'),
+  ]
+
+  const bundles = packGroups(pages, 1000, (p) => p.group)
+
+  for (const bundle of bundles) {
+    const groups = new Set(bundle.pages.map((p) => p.group))
+    assert.equal(groups.size, 1, 'ein Bündel, eine Gruppe')
+  }
+  assert.deepEqual(bundles.map((b) => b.group).sort(), ['Handbuch', 'Tutorial'])
+})
+
+test('packGroups verliert keine Seite, bei welchem Limit auch immer', async () => {
+  const { packGroups } = await load()
+  const pages = Array.from({ length: 20 }, (_, i) =>
+    group(`T${i}`, `/p${i}`, 'x'.repeat(1000), `G${i % 4}`)
+  )
+
+  for (const limit of [500, 1000, 1500, 3000, 100000]) {
+    const seen = packGroups(pages, limit, (p) => p.group).flatMap((b) => b.pages)
+    assert.deepEqual(
+      seen.map((p) => p.url).sort(),
+      pages.map((p) => p.url).sort(),
+      `Limit ${limit}`
+    )
+  }
+})
+
+test('packGroups nummeriert nur die Gruppen, die geteilt werden mussten', async () => {
+  const { packGroups } = await load()
+  const pages = [
+    group('A1', '/a1', 'x'.repeat(600), 'Gross'),
+    group('A2', '/a2', 'x'.repeat(600), 'Gross'),
+    group('B1', '/b1', 'x'.repeat(10), 'Klein'),
+  ]
+
+  const bundles = packGroups(pages, 1000, (p) => p.group)
+
+  assert.deepEqual(
+    bundles.map((b) => b.title),
+    ['Gross (1/2)', 'Gross (2/2)', 'Klein']
+  )
+})
+
+test('ohne Gruppierung bleibt es beim reinen Packen nach Größe', async () => {
+  const { packGroups } = await load()
+  const pages = Array.from({ length: 4 }, (_, i) =>
+    group(`T${i}`, `/p${i}`, 'x'.repeat(400), undefined)
+  )
+
+  const bundles = packGroups(pages, 1000)
+
+  assert.equal(bundles.length, 2)
+  assert.equal(bundles[0].title, 'Weitere Seiten (1/2)')
+})
+
+/*
+ * Die Bündelgrenze ist eine geratene Zahl — gemessen ist nur, dass 25 KB
+ * durchgehen. Wer eine Site mit anderer Textmenge baut, muss sie verschieben
+ * können, ohne die Vorlage zu ändern.
+ */
+test('build reicht die Bündelgrenze durch', async () => {
+  const { build } = await load()
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
+  for (let i = 0; i < 6; i += 1) {
+    fs.writeFileSync(
+      path.join(dir, `s-${i}.html`),
+      `<title>Seite ${i}</title><main><p>${'x'.repeat(9000)}</p></main>`
+    )
+  }
+  const common = {
+    root: dir,
+    out: path.join(dir, 'text'),
+    siteUrl: 'https://example.org/',
+    prose: 'Load {url}.\n\n{pages}\n',
+    budget: 400,
+    reserve: 0,
+  }
+
+  const eng = build({ ...common, bundleLimit: 10 * 1024 })
+  const weit = build({ ...common, bundleLimit: 60 * 1024 })
+
+  assert.ok(
+    eng.bundled.length > weit.bundled.length,
+    `enge Grenze muss mehr Bündel ergeben: ${eng.bundled.length} vs ${weit.bundled.length}`
+  )
+  fs.rmSync(dir, { recursive: true })
 })

@@ -81,7 +81,7 @@ asks. Where it does not know it, it stops and says why — it does not improvise
 | Sources already Markdown or AsciiDoc, index from the build | [Recipe 0]({{ site.baseurl }}/rezepte/rezept-0.md) |
 | Hand-written HTML in the repository, a build step present | [Recipe 1]({{ site.baseurl }}/rezepte/rezept-1.md) |
 | Jekyll | [Recipe Jekyll]({{ site.baseurl }}/rezepte/jekyll.md) |
-| docToolchain | in progress |
+| docToolchain | [Recipe docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.md) |
 | Antora, Hugo, MkDocs | not in V1 |
 
 The recipes are written in English — they are read by Claude Code, not by you.

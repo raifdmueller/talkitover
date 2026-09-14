@@ -72,6 +72,46 @@ export function packBundles(pages, limit = BUNDLE_LIMIT) {
   return bundles
 }
 
+/**
+ * Packt nach Gruppen, damit ein Bündel einen Namen tragen kann.
+ *
+ * Gemessen an einer Site mit 184 Seiten: Ohne Gruppierung entstanden 38 Bündel,
+ * viele mit einer einzigen Seite, alle namens „Weitere Seiten 17". Das LLM
+ * bekommt damit Adressen ohne Bedeutung und kann nicht wählen, welche es holt.
+ *
+ * Die Grenze kommt von außen — meist das Verzeichnis. Ohne groupOf verhält es
+ * sich wie packBundles, nur mit einem Namen davor.
+ */
+export function packGroups(pages, limit = BUNDLE_LIMIT, groupOf) {
+  const order = []
+  const byGroup = new Map()
+
+  for (const page of pages) {
+    const name = (groupOf ? groupOf(page) : undefined) || 'Weitere Seiten'
+    if (!byGroup.has(name)) {
+      byGroup.set(name, [])
+      order.push(name)
+    }
+    byGroup.get(name).push(page)
+  }
+
+  const bundles = []
+  for (const name of order) {
+    const parts = packBundles(byGroup.get(name), limit)
+    parts.forEach((group, index) => {
+      bundles.push({
+        group: name,
+        // Nur was geteilt werden musste, trägt eine Nummer: Ein „(1/1)" hinter
+        // jedem Namen ist Lärm.
+        title: parts.length > 1 ? `${name} (${index + 1}/${parts.length})` : name,
+        pages: group,
+      })
+    })
+  }
+
+  return bundles
+}
+
 export function promptFrom(prose, entries) {
   return prose.replace('{pages}', entries.map((e) => `- ${e.title}: ${e.url}`).join('\n'))
 }
@@ -88,7 +128,10 @@ export function providerUrlLength(prose, entries) {
  * nächste Beitrag die Form umwerfen — und mit ihr die URLs, die schon in
  * Gesprächen unterwegs sind.
  */
-export function chooseShape(pages, { prose, budget = URL_BUDGET, reserve = 0.1, entryOf }) {
+export function chooseShape(pages, {
+  prose, budget = URL_BUDGET, reserve = 0.1, entryOf, groupOf,
+  bundleLimit = BUNDLE_LIMIT,
+}) {
   const ceiling = Math.floor(budget * (1 - reserve))
   let named = [...pages]
   let bundled = []
@@ -100,9 +143,9 @@ export function chooseShape(pages, { prose, budget = URL_BUDGET, reserve = 0.1, 
     }
     // Die letzte einzeln genannte Seite rutscht in die Bündel und wird neu
     // gepackt — sonst entstünden Bündel, die kleiner sind als das Limit.
-    const rest = [...bundled.flat(), named[named.length - 1]]
+    const rest = [...bundled.flatMap((b) => b.pages), named[named.length - 1]]
     named = named.slice(0, -1)
-    bundled = packBundles(rest)
+    bundled = packGroups(rest, bundleLimit, groupOf)
   }
 }
 
@@ -203,6 +246,12 @@ export function build(options) {
   const {
     root, out, siteUrl, sections = [], prose, dates = {}, budget, reserve,
     extraPages = [],
+    // Grenze für die Bündel, meist das Verzeichnis. Ohne sie heißen alle
+    // Bündel gleich, und das LLM kann nicht wählen, welches es holt.
+    groupOf,
+    // Geraten, nicht gemessen: Gemessen ist nur, dass 25 KB durchgehen. Wer
+    // eine Site mit anderer Textmenge baut, verschiebt die Grenze hier.
+    bundleLimit,
     // Jekyll rendert .md, auch ohne Front Matter — auf GitHub Pages immer. Eine
     // Textfassung mit dieser Endung liefe ein zweites Mal durch Liquid. Wer auf
     // einer Jekyll-Site baut, gibt hier '.txt' an: dann ist die Datei statisch.
@@ -219,14 +268,16 @@ export function build(options) {
       page.asIs
         ? { title: page.title, url: page.url }
         : { title: page.title, url: `${siteUrl}${directory}/${slugOf(page.url, siteUrl)}${extension}` },
-    bundle: (group, index) => ({
-      title: `Weitere Seiten ${index + 1}`,
+    bundle: (bundle, index) => ({
+      title: bundle.title,
       url: `${siteUrl}${directory}/bundle-${index + 1}${extension}`,
-      pages: group.length,
+      pages: bundle.pages.length,
     }),
   }
 
-  const { named, bundled } = chooseShape(ordered, { prose, budget, reserve, entryOf })
+  const { named, bundled } = chooseShape(ordered, {
+    prose, budget, reserve, entryOf, groupOf, bundleLimit,
+  })
 
   fs.rmSync(out, { recursive: true, force: true })
   fs.mkdirSync(out, { recursive: true })
@@ -234,11 +285,11 @@ export function build(options) {
     if (page.asIs) continue
     fs.writeFileSync(path.join(out, `${slugOf(page.url, siteUrl)}${extension}`), asText(page), 'utf-8')
   }
-  bundled.forEach((group, index) => {
-    const header = `# ${siteUrl} — Bündel ${index + 1} von ${bundled.length}\n\n> ${group.length} Seiten im Volltext.\n\n`
+  bundled.forEach((bundle, index) => {
+    const header = `# ${bundle.title}\n\n> ${bundle.pages.length} Seiten im Volltext, von ${siteUrl}\n\n`
     fs.writeFileSync(
       path.join(out, `bundle-${index + 1}${extension}`),
-      header + group.map(asText).join('\n---\n\n') + '\n',
+      header + bundle.pages.map(asText).join('\n---\n\n') + '\n',
       'utf-8'
     )
   })
@@ -250,7 +301,7 @@ export function build(options) {
     url: entries.length ? entries[0].url : siteUrl,
     length: providerUrlLength(prose, entries),
     named: named.length,
-    bundled: bundled.map((g) => g.length),
+    bundled: bundled.map((b) => ({ title: b.title, pages: b.pages.length })),
   }
 }
 

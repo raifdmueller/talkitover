@@ -52,8 +52,9 @@ sagt warum — es improvisiert nicht.
 |Der Prompt, mit dem alles anfängt: Generator erkennen, Rezept holen.
 
 |`docs/rezepte/`
-|Rezept 0 (Quellen schon LLM-lesbar), Rezept 1 (statisches HTML ohne Generator)
-und das Jekyll-Rezept, nach dem diese Site selbst gebaut ist. Jedes mit
+|Vier Rezepte: Rezept 0 (Quellen schon LLM-lesbar), Rezept 1 (statisches HTML
+ohne Generator), Jekyll (nach dem diese Site selbst gebaut ist) und
+docToolchain (gemessen an den drei Sites auf doctoolchain.org). Jedes mit
 Abbruchkriterien — ein klarer Stopp schlägt eine halb talkable Site.
 
 |`docs/prompts/`
@@ -61,8 +62,9 @@ Abbruchkriterien — ein klarer Stopp schlägt eine halb talkable Site.
 Site mit Index, `site@1` für eine Site ohne.
 
 |`docs/vorlagen/`
-|Der Generator aus Rezept 1. Liest die HTML-Dateien, schreibt Textfassungen,
-misst das Budget und baut den Prompt.
+|Der Generator, den alle HTML-Rezepte benutzen. Liest die HTML-Dateien, schreibt
+Textfassungen, misst das Budget und baut den Prompt. Dazu der Jekyll-Include als
+Vorlage, damit ihn niemand abtippt.
 
 |`docs/prd.adoc`
 |Das PRD mit den Entscheidungen E1–E8.
@@ -76,7 +78,7 @@ sie prüfen kann.
 Jekyll-Durchläufen und schreibt die Textfassungen und den Prompt des Buttons.
 
 |`test/`
-|57 Tests, ohne Abhängigkeiten. Dazu `check:sites`, das jeden Galerie-Eintrag
+|70 Tests, ohne Abhängigkeiten. Dazu `check:sites`, das jeden Galerie-Eintrag
 gegen die echte Site prüft.
 |===
 
@@ -108,7 +110,7 @@ mit den Zahlen, und mit dem, was noch ungemessen ist.
 
 [source,bash]
 ----
-npm test                # 57 Tests, keine Abhängigkeiten
+npm test                # 70 Tests, keine Abhängigkeiten
 npm run check:sites     # prüft jeden Galerie-Eintrag gegen die echte Site
 npm run build:talkitover # erzeugt Textfassungen und Prompt (zwischen den Builds)
 ----
