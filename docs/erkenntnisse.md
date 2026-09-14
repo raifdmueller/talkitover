@@ -19,7 +19,7 @@ unsere eigene, die eine Zeit lang als Erkenntnis auf dieser Seite stand.
 Was hier steht, ist gemessen, nicht vermutet. Wo eine Zahl steht, kommt sie aus
 einem Versuch, und wo eine Annahme offen ist, sagen wir es.
 
-## Eine Beobachtung ist keine Regel. Diese hier stand einen Tag lang falsch hier
+## Eine Beobachtung ist keine Regel. Diese hier stand einen Tag lang auf dieser Seite
 
 Hier stand: „Das LLM des Lesers holt eine URL, die in der Nachricht stand. Eine
 URL, die es nur *in* einem geholten Dokument gefunden hat, verweigert es." Das

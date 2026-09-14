@@ -20,7 +20,7 @@ beforehand — our own among them, after it had stood on this page as a finding.
 What follows is measured, not assumed. Where there is a number, it came from an
 experiment, and where an assumption is still open, we say so.
 
-## One observation is not a rule. This one stood here wrong for a day
+## One observation is not a rule. This one stood on this page for a day
 
 This page used to say: "The reader's LLM fetches a URL that stood in the message
 it was given. A URL it found only *inside* a fetched document, it refuses." That
