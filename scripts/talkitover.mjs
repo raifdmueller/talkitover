@@ -24,6 +24,7 @@ const SECTIONS = [
   'rezepte/rezept-0.md',
   'rezepte/rezept-1.md',
   'rezepte/jekyll.md',
+  'rezepte/doctoolchain.md',
   'galerie/index.html',
   'erkenntnisse/index.html',
 ]

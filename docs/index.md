@@ -79,5 +79,5 @@ dich. Kennt er ihn nicht, bricht er ab und sagt warum – er improvisiert nicht.
 | Quelltexte schon Markdown oder AsciiDoc, Index aus dem Build | [Rezept 0]({{ site.baseurl }}/rezepte/rezept-0.md) |
 | HTML von Hand im Repo, Build-Schritt vorhanden | [Rezept 1]({{ site.baseurl }}/rezepte/rezept-1.md) |
 | Jekyll | [Rezept Jekyll]({{ site.baseurl }}/rezepte/jekyll.md) |
-| docToolchain | in Arbeit |
+| docToolchain | [Rezept docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.md) |
 | Antora, Hugo, MkDocs | nicht in V1 |
