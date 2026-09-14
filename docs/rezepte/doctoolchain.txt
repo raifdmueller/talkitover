@@ -58,7 +58,7 @@ STEP 4 — Vendor talkitover.js and install the generator.
     groupOf      see STEP 5 — this one decides whether the prompt is usable
     bundleLimit  see STEP 6
     prose        the first fenced code block of
-                 https://raifdmueller.github.io/talkitover/prompts/site.md
+                 https://raifdmueller.github.io/talkitover/prompts/site.txt
 
 STEP 5 — Give the bundles names, or the prompt is useless.
 

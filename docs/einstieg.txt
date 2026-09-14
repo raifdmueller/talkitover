@@ -22,10 +22,10 @@ STEP 1 — Detect the generator yourself.
 
 STEP 2 — Load the matching recipe and follow it.
 
-  already-llm-readable  https://raifdmueller.github.io/talkitover/rezepte/rezept-0.md
-  jekyll                https://raifdmueller.github.io/talkitover/rezepte/jekyll.md
-  doctoolchain          https://raifdmueller.github.io/talkitover/rezepte/doctoolchain.md
-  static-html           https://raifdmueller.github.io/talkitover/rezepte/rezept-1.md
+  already-llm-readable  https://raifdmueller.github.io/talkitover/rezepte/rezept-0.txt
+  jekyll                https://raifdmueller.github.io/talkitover/rezepte/jekyll.txt
+  doctoolchain          https://raifdmueller.github.io/talkitover/rezepte/doctoolchain.txt
+  static-html           https://raifdmueller.github.io/talkitover/rezepte/rezept-1.txt
 
   Fetch the recipe over the network and do what it says — the recipe, not your
   own idea of it. If the URL returns anything but the recipe text, stop and

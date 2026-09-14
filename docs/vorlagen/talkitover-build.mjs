@@ -1,7 +1,7 @@
 /**
  * Erzeugt die Textfassungen und den Prompt für den TalkItOver-Button.
  *
- * Vorlage aus Rezept 1: https://raifdmueller.github.io/talkitover/rezepte/rezept-1.md
+ * Vorlage aus Rezept 1: https://raifdmueller.github.io/talkitover/rezepte/rezept-1.txt
  * MIT · https://github.com/raifdmueller/talkitover
  *
  * Warum das Script überhaupt nötig ist: Das LLM des Lesers holt nur URLs, die
@@ -252,10 +252,17 @@ export function build(options) {
     // Geraten, nicht gemessen: Gemessen ist nur, dass 25 KB durchgehen. Wer
     // eine Site mit anderer Textmenge baut, verschiebt die Grenze hier.
     bundleLimit,
-    // Jekyll rendert .md, auch ohne Front Matter — auf GitHub Pages immer. Eine
-    // Textfassung mit dieser Endung liefe ein zweites Mal durch Liquid. Wer auf
-    // einer Jekyll-Site baut, gibt hier '.txt' an: dann ist die Datei statisch.
-    extension = '.md',
+    // '.txt' ist die einzige Endung, die beide Anbieter nehmen: GitHub Pages
+    // liefert .md als text/markdown aus, und ChatGPT antwortet darauf mit
+    // "400 Unsupported content-type". Es verweigert dann nicht bloß — es sucht
+    // im Netz weiter und antwortet aus dem, was es findet, ohne das zu sagen.
+    // Gemessen am 14.09.2026: dreimal gefragt, dreimal falsch, jedes Mal
+    // plausibel genug, um ohne die Datei in der Hand unbemerkt zu bleiben.
+    //
+    // Nebenbei rendert Jekyll .md auch ohne Front Matter — auf GitHub Pages
+    // immer. Eine Textfassung mit dieser Endung liefe ein zweites Mal durch
+    // Liquid und stünde zusätzlich als eigene Seite im Prompt.
+    extension = '.txt',
   } = options
   const pages = readPages(root, siteUrl, { ...options, skip: [...(options.skip || []), outName(out)] })
   const ordered = order([...pages, ...extraPages], sections, dates, siteUrl)

@@ -65,7 +65,7 @@ geflogen — nachgemessen und aufgeschrieben:
 
 ## So fängst du an
 
-1. [Einstiegs-Prompt kopieren]({{ site.baseurl }}/einstieg.md)
+1. [Einstiegs-Prompt kopieren]({{ site.baseurl }}/einstieg.txt)
 2. In Claude Code einfügen, im Repo deiner Site.
 3. PR reviewen und mergen.
 
@@ -76,8 +76,8 @@ dich. Kennt er ihn nicht, bricht er ab und sagt warum – er improvisiert nicht.
 
 | Fall | Rezept |
 |---|---|
-| Quelltexte schon Markdown oder AsciiDoc, Index aus dem Build | [Rezept 0]({{ site.baseurl }}/rezepte/rezept-0.md) |
-| HTML von Hand im Repo, Build-Schritt vorhanden | [Rezept 1]({{ site.baseurl }}/rezepte/rezept-1.md) |
-| Jekyll | [Rezept Jekyll]({{ site.baseurl }}/rezepte/jekyll.md) |
-| docToolchain | [Rezept docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.md) |
+| Quelltexte schon Markdown oder AsciiDoc, Index aus dem Build | [Rezept 0]({{ site.baseurl }}/rezepte/rezept-0.txt) |
+| HTML von Hand im Repo, Build-Schritt vorhanden | [Rezept 1]({{ site.baseurl }}/rezepte/rezept-1.txt) |
+| Jekyll | [Rezept Jekyll]({{ site.baseurl }}/rezepte/jekyll.txt) |
+| docToolchain | [Rezept docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.txt) |
 | Antora, Hugo, MkDocs | nicht in V1 |

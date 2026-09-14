@@ -15,6 +15,10 @@ das HTML-Element in den meisten Template-Pipelines und zerreißt die Seite.
   data-prompt="{{ site.data.talkitover.version }}"
   label="Let's talk it over"></talk-it-over>
 {%- else -%}
-<p class="muted">Der Button fehlt: <code>npm run build:talkitover</code> lief
-nicht zwischen den beiden Jekyll-Durchläufen.</p>
+{%- comment -%}
+Als <aside>, damit der Generator den Satz nicht in die Textfassung übernimmt:
+Er liest das HTML des ersten Durchlaufs, und darin fehlt der Button immer.
+{%- endcomment -%}
+<aside class="muted">Der Button fehlt: <code>npm run build:talkitover</code> lief
+nicht zwischen den beiden Jekyll-Durchläufen.</aside>
 {%- endif -%}
