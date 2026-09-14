@@ -83,3 +83,39 @@ test('validate meldet jeden Fehler einzeln, nicht nur den ersten', () => {
 
   assert.equal(problems.length, 3)
 })
+
+
+/*
+ * Die Netzprüfung lief wochenlang grün, während eine Galerie-Site 31 ihrer 33
+ * Adressen als text/markdown auslieferte. Zwei Gründe, beide hier behoben:
+ * Sie akzeptierte jedes text/*, und sie prüfte genau eine Adresse.
+ *
+ * Diese Tests prüfen die Logik ohne Netz — was der Lauf aus einer Seite liest.
+ */
+test('addressesInPrompt findet die Dateien der eigenen Site', () => {
+  const { addressesInPrompt } = require('./sites.check.js')
+  const html =
+    '<talk-it-over url="https://example.org/text/index.txt" ' +
+    'prompt="Load https://example.org/text/index.txt&#10;' +
+    '- Rezept: https://example.org/rezepte/eins.md&#10;' +
+    '- Fremd: https://anderswo.org/x.txt"></talk-it-over>'
+
+  assert.deepEqual(addressesInPrompt(html, 'https://example.org/'), [
+    'https://example.org/text/index.txt',
+    'https://example.org/rezepte/eins.md',
+  ])
+})
+
+test('addressesInPrompt behauptet nichts über Sites, die den Prompt erst im Browser bauen', () => {
+  const { addressesInPrompt } = require('./sites.check.js')
+
+  assert.deepEqual(addressesInPrompt('<div id="app"></div>', 'https://example.org/'), [])
+})
+
+test('addressesInPrompt nennt jede Adresse einmal', () => {
+  const { addressesInPrompt } = require('./sites.check.js')
+  const html =
+    '<talk-it-over prompt="https://example.org/a.txt und nochmal https://example.org/a.txt"></talk-it-over>'
+
+  assert.deepEqual(addressesInPrompt(html, 'https://example.org/'), ['https://example.org/a.txt'])
+})
