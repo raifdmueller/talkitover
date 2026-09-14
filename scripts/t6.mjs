@@ -5,9 +5,10 @@
  * gewählt und nie gemessen worden — und er ist mindestens um das Fünffache zu
  * vorsichtig: Claude wie ChatGPT nehmen 30000 Zeichen vollständig an.
  *
- * Angehoben wird er trotzdem noch nicht. 30000 ist gemessen als Untergrenze,
- * nicht als Grenze. Einen Wert auf die Kante des Gemessenen zu setzen wäre
- * wieder geraten, nur mit mehr Selbstvertrauen.
+ * Angehoben wird er trotzdem noch nicht, aus zwei Gründen. 30000 ist als
+ * Untergrenze gemessen, nicht als Grenze. Und die wirksame Grenze ist nicht
+ * die des Anbieters, sondern das Minimum aus Anbieter und BROWSER des Lesers —
+ * und dessen Browser kennen wir nicht.
  *
  * Diese Seite baut Links mit Prompts bekannter Länge. Sie benutzt bewusst NICHT
  * das Web Component: das kappt selbst bei 6000 und fiele auf die Zwischenablage
@@ -26,13 +27,19 @@ const OUT = path.join(ROOT, 'docs', 't6.html')
 /*
  * Die Längen, bei denen wir nachsehen.
  *
- * 6000 war unsere Annahme. Gemessen am 14.09.2026: ChatGPT nimmt 30000
- * vollständig an — die Endmarke kam zurück. Das ist aber nur die obere Kante
- * dieser Liste gewesen, keine Grenze. Deshalb reicht sie jetzt weiter, bis
- * etwas bricht: Eine Untergrenze zu kennen ist besser als zu raten, aber die
- * Grenze zu kennen ist das Ziel.
+ * Gemessen am 14.09.2026: 30000 kommt bei Claude wie ChatGPT vollständig an.
+ * 200000 scheitert — aber am BROWSER, nicht am Anbieter: "Diese Seite ist
+ * nicht erreichbar", die Anfrage geht gar nicht erst raus.
+ *
+ * Das ist kein Störfaktor, sondern der eigentliche Befund. Der Browser steht im
+ * echten Pfad: Wer den Button drückt, navigiert zur Provider-URL. Bricht sein
+ * Browser bei 50000, ist das die Grenze, egal was der Anbieter annähme. Die
+ * wirksame Grenze ist das Minimum aus beidem — und sie hängt am Browser des
+ * LESERS, den wir nicht kennen.
+ *
+ * Deshalb jetzt feine Stufen zwischen dem, was geht, und dem, was nicht geht.
  */
-const LENGTHS = [6000, 30000, 50000, 100000, 200000]
+const LENGTHS = [30000, 40000, 50000, 65000, 80000, 100000]
 
 const PROVIDERS = {
   claude: { name: 'Claude', base: 'https://claude.ai/new?q=' },
@@ -146,14 +153,28 @@ Chat mit einem Prompt genau der angegebenen Länge.</strong></p>
   <li>Abschicken.</li>
   <li>Antwort ansehen: Kommt <code>ENDE T6-&lt;Länge&gt;-&lt;ANBIETER&gt;</code>
       zurück, war der Prompt vollständig. Fehlt die Zeile, wurde abgeschnitten.</li>
-  <li><strong>Fang oben an.</strong> Klappt die längste, klappen alle darunter
-      auch, und du bist fertig. Klappt sie nicht, arbeite dich nach unten: Die
-      letzte Zeile, die noch klappt, ist die Grenze.</li>
+  <li><strong>Halbiere dich zur Grenze.</strong> 30.000 klappt, 200.000 nicht.
+      Fang in der Mitte an und arbeite dich zur Stelle, an der es kippt.</li>
 </ol>
 
+<h2>Zwei verschiedene Fehler</h2>
+
+<p>Sie sehen unterschiedlich aus, und der Unterschied ist der Befund:</p>
+
+<ul>
+  <li><strong>„Diese Seite ist nicht erreichbar"</strong>, noch bevor der Chat
+      aufgeht → der <em>Browser</em> hat abgelehnt. Die Anfrage ist nie
+      rausgegangen.</li>
+  <li><strong>Der Chat geht auf, aber die Endmarke fehlt</strong> → der
+      <em>Anbieter</em> hat gekürzt.</li>
+</ul>
+
+<p>Schreib dazu, welchen Browser du benutzt. Die Grenze hängt daran, und wir
+kennen den Browser des Lesers nicht — für den Button zählt deshalb die
+niedrigste, nicht die höchste.</p>
+
 <p>Stand 14.09.2026: <strong>Beide Anbieter haben 30.000 vollständig
-angenommen.</strong> Wo die Grenze wirklich liegt, ist offen — 30.000 war nur
-die obere Kante der ersten Messreihe.</p>
+angenommen.</strong> 200.000 scheitert am Browser. Dazwischen ist offen.</p>
 
 <p>Die Links benutzen bewusst nicht den TalkItOver-Button: der kappt selbst bei
 6000 Zeichen und fiele auf die Zwischenablage zurück. Wir würden dann unsere
