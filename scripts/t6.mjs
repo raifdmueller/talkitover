@@ -3,7 +3,11 @@
  *
  * MAX_URL_LENGTH steht in talkitover.js auf 6000. Der Wert war konservativ
  * gewählt und nie gemessen worden — und er ist mindestens um das Fünffache zu
- * vorsichtig: ChatGPT nimmt 30000 Zeichen vollständig an.
+ * vorsichtig: Claude wie ChatGPT nehmen 30000 Zeichen vollständig an.
+ *
+ * Angehoben wird er trotzdem noch nicht. 30000 ist gemessen als Untergrenze,
+ * nicht als Grenze. Einen Wert auf die Kante des Gemessenen zu setzen wäre
+ * wieder geraten, nur mit mehr Selbstvertrauen.
  *
  * Diese Seite baut Links mit Prompts bekannter Länge. Sie benutzt bewusst NICHT
  * das Web Component: das kappt selbst bei 6000 und fiele auf die Zwischenablage
@@ -147,8 +151,9 @@ Chat mit einem Prompt genau der angegebenen Länge.</strong></p>
       letzte Zeile, die noch klappt, ist die Grenze.</li>
 </ol>
 
-<p>Stand 14.09.2026: <strong>ChatGPT hat 30.000 vollständig angenommen.</strong>
-Für Claude ist die Zahl offen.</p>
+<p>Stand 14.09.2026: <strong>Beide Anbieter haben 30.000 vollständig
+angenommen.</strong> Wo die Grenze wirklich liegt, ist offen — 30.000 war nur
+die obere Kante der ersten Messreihe.</p>
 
 <p>Die Links benutzen bewusst nicht den TalkItOver-Button: der kappt selbst bei
 6000 Zeichen und fiele auf die Zwischenablage zurück. Wir würden dann unsere
