@@ -37,7 +37,8 @@ addresses on **foreign** hosts, and ask for each of them to be fetched. Not one
 of those addresses stood in the message.
 
 Claude fetched all three. Asked what had stopped it: "no block, no timeout, no
-domain restriction."
+domain restriction." ChatGPT fetched all three too, and said the same. The
+provider makes no difference here.
 
 It does keep a depth discipline. The fetched pages contained further addresses —
 archive links — and it did **not** follow them, with a reason: they were not in
@@ -45,6 +46,21 @@ the file it had been asked about. It asked whether it should.
 
 That is the difference we had missed: it is a **choice**, not a block. Choices
 look like rules from the outside, until somebody tests them a second time.
+
+## "Fetched" does not mean both read the same thing
+
+Two of the three addresses in that test are 525-byte stubs: a
+`<meta http-equiv="refresh">`, one sentence saying the post moved to the
+archive, title "Umgezogen". The article lives elsewhere.
+
+Claude saw the stub, reported it as a stub, and named the archive address.
+ChatGPT reported that the page "contains the article" — and its citation carried
+the title of the **archive page**, not "Umgezogen". Its fetcher followed the
+redirect; Claude's did not.
+
+Both reported truthfully what they had received. They had simply not received
+the same thing. **So do not put your text versions behind a meta refresh** — one
+reader gets the content, the other gets a one-liner, and neither of them notices.
 
 ## The other provider does not refuse — it invents
 
