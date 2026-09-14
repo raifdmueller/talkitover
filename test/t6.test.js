@@ -19,7 +19,7 @@ test('padTo trifft die Ziellänge auf das Zeichen genau', async () => {
   const { padTo, promptFor } = await load()
 
   for (const base of [CLAUDE, CHATGPT]) {
-    for (const target of [4000, 6000, 8000, 12000, 20000, 30000]) {
+    for (const target of [4000, 6000, 30000, 50000, 100000, 200000]) {
       const id = `T6-${target}-X`
       const padded = padTo(target, id, base)
       const real = base.length + encodeURIComponent(promptFor(id, padded.body)).length

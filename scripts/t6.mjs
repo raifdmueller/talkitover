@@ -1,9 +1,9 @@
 /**
  * T6 — die Grenze der Provider-URL messen, statt sie zu raten.
  *
- * MAX_URL_LENGTH steht in talkitover.js auf 6000. Der Wert ist konservativ
- * gewählt und nie gemessen worden. Semantic Anchors liegt mit 5891 nur 109
- * Zeichen darunter — das ist die knappste Stelle im ganzen System.
+ * MAX_URL_LENGTH steht in talkitover.js auf 6000. Der Wert war konservativ
+ * gewählt und nie gemessen worden — und er ist mindestens um das Fünffache zu
+ * vorsichtig: ChatGPT nimmt 30000 Zeichen vollständig an.
  *
  * Diese Seite baut Links mit Prompts bekannter Länge. Sie benutzt bewusst NICHT
  * das Web Component: das kappt selbst bei 6000 und fiele auf die Zwischenablage
@@ -19,8 +19,16 @@ import path from 'node:path'
 const ROOT = path.join(import.meta.dirname, '..')
 const OUT = path.join(ROOT, 'docs', 't6.html')
 
-/** Die Längen, bei denen wir nachsehen. 6000 ist unsere heutige Annahme. */
-const LENGTHS = [4000, 6000, 8000, 12000, 20000, 30000]
+/*
+ * Die Längen, bei denen wir nachsehen.
+ *
+ * 6000 war unsere Annahme. Gemessen am 14.09.2026: ChatGPT nimmt 30000
+ * vollständig an — die Endmarke kam zurück. Das ist aber nur die obere Kante
+ * dieser Liste gewesen, keine Grenze. Deshalb reicht sie jetzt weiter, bis
+ * etwas bricht: Eine Untergrenze zu kennen ist besser als zu raten, aber die
+ * Grenze zu kennen ist das Ziel.
+ */
+const LENGTHS = [6000, 30000, 50000, 100000, 200000]
 
 const PROVIDERS = {
   claude: { name: 'Claude', base: 'https://claude.ai/new?q=' },
@@ -134,13 +142,18 @@ Chat mit einem Prompt genau der angegebenen Länge.</strong></p>
   <li>Abschicken.</li>
   <li>Antwort ansehen: Kommt <code>ENDE T6-&lt;Länge&gt;-&lt;ANBIETER&gt;</code>
       zurück, war der Prompt vollständig. Fehlt die Zeile, wurde abgeschnitten.</li>
-  <li>Von oben nach unten, bis die Endmarke ausbleibt. Die letzte Zeile, die noch
-      klappt, ist die Grenze.</li>
+  <li><strong>Fang oben an.</strong> Klappt die längste, klappen alle darunter
+      auch, und du bist fertig. Klappt sie nicht, arbeite dich nach unten: Die
+      letzte Zeile, die noch klappt, ist die Grenze.</li>
 </ol>
+
+<p>Stand 14.09.2026: <strong>ChatGPT hat 30.000 vollständig angenommen.</strong>
+Für Claude ist die Zahl offen.</p>
 
 <p>Die Links benutzen bewusst nicht den TalkItOver-Button: der kappt selbst bei
 6000 Zeichen und fiele auf die Zwischenablage zurück. Wir würden dann unsere
-eigene Annahme messen statt der Grenze des Anbieters.</p>
+eigene Annahme messen statt der Grenze des Anbieters — und genau die Annahme
+steht ja zur Debatte.</p>
 
 <table>
   <thead>
