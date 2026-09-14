@@ -148,12 +148,10 @@ Unser Deckel steht bei 6000 Zeichen. Die Rechnung für Semantic Anchors:
 
 Die Kodierung kostet übrigens weniger, als man denkt: Faktor 1,24, nicht 3.
 
-**Die 6000 sind geraten.** In einer Sonde hat Cloudflare eine URL mit 64 000
-Zeichen angenommen — `cf-mitigated: challenge`, kein `414 URI Too Long`. Die
-Leitung ist also nicht die Grenze. Ob die Anwendung dahinter den ganzen
-Parameter liest, haben wir nicht gemessen, und ein still abgeschnittener Prompt
-ist genau der Fehler, gegen den die Zahl schützt. Bis das gemessen ist, bleibt
-sie stehen.
+**Diese 6000 waren geraten.** Sie stehen inzwischen auf 20 000, und die Sonde
+von damals zeigte schon in die richtige Richtung: Cloudflare nahm eine URL mit
+64 000 Zeichen an — `cf-mitigated: challenge`, kein `414 URI Too Long`. Die
+Leitung war nie die Grenze. Wo sie wirklich liegt, steht weiter unten.
 
 ## Bündel statt Blätter, damit nichts hinter einem Link liegt
 
@@ -262,35 +260,46 @@ liest sich wie eine ganze.
 Für ChatGPT ist die Zahl weiter offen. Dort scheiterte der Abruf schon am
 Content-Type, bevor die Länge eine Rolle spielte.
 
-## Die Provider-URL ist viel großzügiger als angenommen
+## Nicht der Anbieter setzt die Grenze, sondern der Browser des Lesers
 
 6000 Zeichen standen als `MAX_URL_LENGTH` im Web Component — konservativ
 gewählt, nie gemessen. Am 14.09.2026 nachgeholt, mit Links genau bekannter
-Länge und einer Endmarke als letzter Zeile: Kommt sie im Chat an, war der
-Prompt vollständig.
+Länge und einer Endmarke als letzter Zeile.
 
-| Länge der URL | Claude | ChatGPT |
-|---|---|---|
-| 30.000 | vollständig | vollständig |
+| Länge der URL | Claude | ChatGPT | Browser |
+|---|---|---|---|
+| 30.000 | vollständig | vollständig | navigiert |
+| 50.000 | vollständig | vollständig | navigiert |
+| 100.000 | nie gesehen | nie gesehen | **lehnt ab** |
 
-Beide Anbieter nehmen das Fünffache unserer Annahme. Die knappste Stelle im
-System, um die wir uns Sorgen gemacht haben — Semantic Anchors mit 5891 von
-6000 —, war nie knapp.
+Der dritte Fall sieht aus wie ein Anbieterproblem und ist keins. Der Browser
+meldet „Diese Seite ist nicht erreichbar", bevor die Anfrage rausgeht — der
+Anbieter bekommt den Prompt nie zu sehen.
 
-**Der Wert steht trotzdem weiter auf 6000.** 30.000 war die obere Kante der
-Messreihe, also eine Untergrenze, keine Grenze. Einen Wert auf die Kante des
-Gemessenen zu setzen wäre wieder geraten, nur mit mehr Selbstvertrauen — und
-genau diesen Fehler haben wir heute schon einmal korrigiert, weiter oben auf
-dieser Seite. Die Messreihe läuft jetzt bis 200.000.
+**Das ist der eigentliche Befund.** Wir haben nach der Grenze des Anbieters
+gesucht. Die zählt aber nicht: Der Browser steht im Pfad, und zwar der Browser
+des **Lesers**, den wir nicht kennen. Die wirksame Grenze ist das Minimum aus
+beidem, und die eine Hälfte davon können wir nicht messen.
+
+Deshalb haben wir aufgehört zu halbieren. „Zwischen 50.000 und 100.000" reicht:
+Ein strengerer Browser verschiebt die Zahl ohnehin, und genauer zu wissen, wo
+es in *einem* Browser kippt, hilft dem Leser mit einem anderen nicht.
+
+`MAX_URL_LENGTH` steht seither auf **20.000** — deutlich unter der Hälfte
+dessen, was gehalten hat, nicht an der Kante. Der alte Wert war um das
+Achtfache zu niedrig.
+
+Dass die Zahl überhaupt so hoch stehen darf, liegt an der Rückfallebene: Wird
+sie überschritten, geht der Prompt in die Zwischenablage. Ein Klick mehr, nichts
+verloren. Eine zu niedrige Grenze kostet dagegen jeden Leser den Ein-Klick-Weg
+und erzwingt Bündelung, die nicht nötig wäre.
 
 ## Was offen ist
 
-Wo die Provider-URL wirklich bricht. Wir kennen eine Untergrenze von 30.000
-für beide Anbieter, nicht die Grenze.
+Die Abschneidegrenze für ChatGPT. Dort scheiterte der Abruf am Content-Type,
+bevor die Länge eine Rolle spielte. Für Claude liegt sie bei rund 100 KB, siehe
+oben.
 
-Und die Abschneidegrenze für ChatGPT: Dort scheiterte der Abruf am
-Content-Type, bevor die Länge eine Rolle spielte. Für Claude liegt sie bei rund
-100 KB, siehe oben.
-
-Bis dahin gelten die konservativen Werte, und die Tests, die sie bewachen,
-fallen um, bevor die Leserschaft es merkt.
+Und die Grenze der Browser, die wir nicht gemessen haben. Sie ist nicht
+messbar — wir kennen den Browser des Lesers nicht, und deshalb steht der Wert
+mit Abstand statt an der Kante.

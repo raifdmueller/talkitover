@@ -145,11 +145,10 @@ Our ceiling sits at 6000 characters. The bill for Semantic Anchors:
 
 Encoding costs less than you would expect, by the way: a factor of 1.24, not 3.
 
-**The 6000 is a guess.** In a probe, Cloudflare accepted a URL of 64,000
-characters — `cf-mitigated: challenge`, not `414 URI Too Long`. So the transport
-is not the limit. Whether the application behind it reads the whole parameter we
-have not measured, and a silently truncated prompt is precisely the failure this
-number guards against. Until that is measured, it stays.
+**That 6000 was a guess.** It is 20,000 by now, and the probe back then already
+pointed the right way. In it, Cloudflare accepted a URL of 64,000
+characters — `cf-mitigated: challenge`, not `414 URI Too Long`. The transport was
+never the limit. Where it really sits is further down.
 
 ## Bundles instead of leaves, so nothing sits behind a link
 
@@ -256,33 +255,43 @@ Truncation is silent. Half a file reads like a whole one.
 For ChatGPT the number is still open. There the fetch failed at the content type,
 before length could matter.
 
-## The provider URL is far more generous than we assumed
+## The limit is not the provider's but the reader's browser
 
 6000 characters stood as `MAX_URL_LENGTH` in the web component — conservatively
 chosen, never measured. Done on 2026-09-14, with links of exactly known length
-and an end marker as the last line: if it comes back in the chat, the prompt
-arrived whole.
+and an end marker as the last line.
 
-| URL length | Claude | ChatGPT |
-|---|---|---|
-| 30,000 | complete | complete |
+| URL length | Claude | ChatGPT | Browser |
+|---|---|---|---|
+| 30,000 | complete | complete | navigates |
+| 50,000 | complete | complete | navigates |
+| 100,000 | never saw it | never saw it | **refuses** |
 
-Both providers take five times our assumption. The tightest spot in the system,
-the one we worried about — Semantic Anchors at 5891 of 6000 — was never tight.
+The third case looks like a provider problem and is not one. The browser says
+"this site can't be reached" before the request goes out — the provider never
+sees the prompt at all.
 
-**The value still stands at 6000.** 30,000 was the top of the test series, so a
-lower bound, not a limit. Setting a value at the edge of what is measured would
-be guessing again, only with more confidence — and we corrected exactly that
-mistake once already today, further up this page. The series now runs to
-200,000.
+**That is the real finding.** We went looking for the provider's limit. It is
+not the one that counts: the browser sits in the path, and it is the **reader's**
+browser, which we do not know. The effective limit is the minimum of the two,
+and one half of it is not ours to measure.
+
+So we stopped bisecting. "Between 50,000 and 100,000" is enough: a stricter
+browser moves the number anyway, and knowing exactly where *one* browser gives
+out does not help a reader using another.
+
+`MAX_URL_LENGTH` has been **20,000** since — well under half of what held, not
+at the edge of it. The old value was eight times too low.
+
+What lets the number sit that high at all is the fallback: past the limit the
+prompt goes to the clipboard. One more click, nothing lost. A limit set too low
+costs every reader the one-click path and forces bundling that was never needed.
 
 ## What is still open
 
-Where the provider URL actually breaks. We know a lower bound of 30,000 for both
-providers, not the limit.
-
-And the truncation limit for ChatGPT: there the fetch failed at the content type
+The truncation limit for ChatGPT. There the fetch failed at the content type
 before length could matter. For Claude it is around 100 KB, see above.
 
-Until then the conservative values stand, and the tests that guard them fail
-before the readership notices.
+And the limit of the browsers we did not measure. It is not measurable — we do
+not know the reader's browser, which is why the value sits with a margin rather
+than at the edge.

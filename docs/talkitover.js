@@ -1,4 +1,4 @@
-/*! TalkItOver v1.0.7 — hand this page to the reader's own LLM.
+/*! TalkItOver v1.1.0 — hand this page to the reader's own LLM.
  *
  * MIT License · Copyright (c) 2026 Ralf D. Müller
  * https://github.com/raifdmueller/talkitover
@@ -19,14 +19,24 @@
  * update pull requests. This file never reads it.
  */
 (function () {
-  const VERSION = "1.0.7";
+  const VERSION = "1.1.0";
   const STORAGE_KEY = "talkitover.provider";
 
-  /* Above this length a provider link is no longer safe: browsers, proxies and
-   * the providers themselves truncate long URLs, and a truncated prompt fails
-   * silently. Beyond it the prompt goes to the clipboard instead.
-   * The number is a conservative guess until Spike #9 measures the real one. */
-  const MAX_URL_LENGTH = 6000;
+  /* Above this length a provider link is no longer safe. Beyond it the prompt
+   * goes to the clipboard instead — a click more for the reader, but nothing
+   * lost. That graceful fallback is why this number may sit high.
+   *
+   * Measured 2026-09-14 with prompts of exact length (see /t6.html):
+   *
+   *   30,000  both providers complete, browser navigates
+   *   50,000  both providers complete, browser navigates
+   *   100,000 the BROWSER refuses — the provider never sees the prompt
+   *
+   * The binding limit is not the provider's but the reader's browser, and we
+   * do not know which browser that is. One was measured; a stricter one may
+   * exist. So this sits at well under half of what held, not at the edge of
+   * it. The old value of 6000 was a guess, and it was eight times too low. */
+  const MAX_URL_LENGTH = 20000;
 
   /* The reader meets a button nobody explained. One entry in the menu leads to
    * the page that says what a click does — and what it does not. */

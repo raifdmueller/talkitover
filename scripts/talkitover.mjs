@@ -9,7 +9,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
-import { build, readTextFiles } from '../docs/vorlagen/talkitover-build.mjs'
+import { build, readTextFiles, URL_BUDGET } from '../docs/vorlagen/talkitover-build.mjs'
 
 const ROOT = path.join(import.meta.dirname, '..')
 const BUILT = path.join(ROOT, '_site')
@@ -66,5 +66,5 @@ fs.writeFileSync(
 
 console.warn(
   `TalkItOver: ${result.entries.length} Einträge (${result.named} einzeln, ` +
-    `${result.bundled.length} Bündel), Provider-URL ${result.length} von 6000.`
+    `${result.bundled.length} Bündel), Provider-URL ${result.length} von ${URL_BUDGET}.`
 )
