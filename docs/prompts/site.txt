@@ -1,6 +1,6 @@
 # Content-Typ „Site"
 
-Version: site@1
+Version: site@2
 
 Für Sites ohne Index: persönliche Websites, Blogs, kleine Projektseiten. Der
 Prompt trägt die Seiten selbst — es gibt keine Datei, die sie auflistet, und es
@@ -8,7 +8,7 @@ muss auch keine geben.
 
 Das Rezept nimmt **den Inhalt des ersten Codeblocks** dieser Datei, ersetzt
 `{pages}` durch die Seitenliste aus dem Generator, setzt das Ergebnis als
-`prompt`-Attribut in den Button und schreibt `data-prompt="site@1"` daneben.
+`prompt`-Attribut in den Button und schreibt `data-prompt="site@2"` daneben.
 
 **Der Unterschied zu `katalog`:** Dort gibt es einen Index, und der Prompt nennt
 zusätzlich die Seiten, weil das LLM den Links im Index nicht folgen darf. Hier
@@ -24,6 +24,19 @@ rohe Datei durch, aus der es gelesen hatte — einen Download, nichts, was man
 einem Kollegen schickt. Es hatte nichts Besseres. Jede Textfassung nennt darum
 oben die Adresse, die ein Mensch öffnen kann.
 
+**Was site@2 gegenüber @1 gelernt hat:** Zweierlei, beides aus dem Betrieb.
+
+Die Regel „antworte nicht aus dem Gedächtnis und such nicht woanders" sollte
+heißen: *erfinde nichts über diese Site*. Ein Leser las sie als Maulkorb für das
+ganze Gespräch und bekam auf eine Frage über die Welt die Auskunft, unser Prompt
+verbiete das Nachschlagen. An ihrer Stelle steht jetzt eine Zuordnungspflicht:
+Alle drei Quellen sind willkommen — diese Site, anderswo Nachgeschlagenes, das
+eigene Wissen des Modells. Verboten ist nur, dass eine für eine andere durchgeht.
+
+Und der Prompt sprach noch von der „.md-Datei, aus der du gelesen hast". Seit
+der Umstellung auf `.txt` gibt es die nicht mehr. Er sagt jetzt „text file" und
+nennt damit, was der Leser wirklich bekommt.
+
 ```
 Load {url}. That is one page of a site, as plain text.
 
@@ -34,7 +47,7 @@ page as text and names the address a person can open at the top.
 {pages}
 
 When I ask for a link, give me the page a person can open — each file names it
-under "Page:" — never the .md file you read from.
+under "Page:" — never the text file you read from.
 
 Ask what I am looking for before you fetch anything. Then fetch what matches,
 read it, and answer from what you read. Keep it short.

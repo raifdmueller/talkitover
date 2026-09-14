@@ -1,6 +1,6 @@
 # Content-Typ „Katalog"
 
-Version: katalog@3
+Version: katalog@4
 
 Für Index-Seiten: `llms.txt` nach Konvention, Inhaltsverzeichnisse, Anchor- und
 Begriffslisten. Der Leser will nicht den Index besprechen, sondern über ihn
@@ -9,7 +9,7 @@ zu den zwei, drei Seiten finden, die seine Frage beantworten.
 Das Rezept nimmt **den Inhalt des ersten Codeblocks** dieser Datei, ersetzt
 `{pages}` durch die Seitenliste der Site (Schritt 5 des Rezepts), setzt das
 Ergebnis als `prompt`-Attribut in den Button und schreibt
-`data-prompt="katalog@3"` daneben.
+`data-prompt="katalog@4"` daneben.
 
 **Die Bedingung dahinter:** Der Button darf nur auf einen Index zeigen, der aus
 Links besteht — eine Liste von Einträgen mit URL. Zeigt er auf eine Datei, die
@@ -17,6 +17,18 @@ die ganze Site als Volltext enthält, schneidet das LLM sie ab und antwortet aus
 dem, was zufällig noch im Fenster stand. Groß und vollständig ist hier
 schlechter als klein und verzweigt. Rezept 0 prüft das, bevor es den Button
 setzt.
+
+**Was katalog@4 gegenüber @3 gelernt hat:** Die Regel „antworte nicht aus dem
+Gedächtnis und such nicht woanders" sollte heißen: *erfinde nichts über diese
+Site*. Ein Leser las sie als Maulkorb für das ganze Gespräch. Er fragte, ob es
+„OWASP Top 10 (2026)" überhaupt gibt — eine Frage über die Welt, nicht über die
+Site — und bekam zur Antwort, unser Prompt verbiete das Nachschlagen. Damit
+kostet die Regel genau das, wofür die Site da ist: einen Leser, der prüfen kann,
+ob unsere Angaben noch stimmen.
+
+An ihrer Stelle steht jetzt eine Zuordnungspflicht. Alle drei Quellen sind
+willkommen — diese Site, anderswo Nachgeschlagenes, das eigene Wissen des
+Modells. Verboten ist nur, dass eine für eine andere durchgeht.
 
 **Was katalog@3 gegenüber @2 gelernt hat:** Der Index allein öffnet die Site
 nicht. Gemessen am 13.09.2026 auf Semantic Anchors: Das LLM des Lesers holt eine

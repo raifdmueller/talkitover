@@ -1,0 +1,14 @@
+{
+  "katalog.txt": {
+    "version": "katalog@4",
+    "fingerprint": "e7a0229b7379a3b9"
+  },
+  "referenz.txt": {
+    "version": "referenz@2",
+    "fingerprint": "c9ca14583fc132d7"
+  },
+  "site.txt": {
+    "version": "site@2",
+    "fingerprint": "b6f1f18d93036cf2"
+  }
+}

@@ -8,6 +8,7 @@
     "test": "node --test test/*.test.js",
     "check:sites": "node test/sites.check.js",
     "build:t6": "node scripts/t6.mjs",
-    "build:talkitover": "node scripts/talkitover.mjs"
+    "build:talkitover": "node scripts/talkitover.mjs",
+    "prompts:fingerprint": "node scripts/prompt-versionen.mjs"
   }
 }

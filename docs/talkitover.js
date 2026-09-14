@@ -15,7 +15,7 @@
  * The button remembers the reader's provider (localStorage, if available).
  * The chevron reopens the choice. Add providers via TalkItOver.providers.
  *
- * data-prompt carries the content type and its version ("referenz@1") for later
+ * data-prompt carries the content type and its version ("referenz@2") for later
  * update pull requests. This file never reads it.
  */
 (function () {
