@@ -15,7 +15,7 @@
     "name": "Semantic Anchors",
     "url": "https://llm-coding.github.io/Semantic-Anchors/",
     "script": "https://llm-coding.github.io/Semantic-Anchors/talkitover.js",
-    "target": "https://llm-coding.github.io/Semantic-Anchors/llms-index.md",
+    "target": "https://llm-coding.github.io/Semantic-Anchors/llms-index.txt",
     "prompt": "katalog@3",
     "recipe": "Rezept 0",
     "since": "2026-09-13",

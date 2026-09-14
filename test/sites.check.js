@@ -61,7 +61,27 @@ function validate(sites) {
   return problems
 }
 
-module.exports = { validate, REQUIRED }
+/**
+ * Logik: Welche Dateien der Button laut Seite ausliefert.
+ *
+ * Der Prompt steht im Attribut des Elements. Sites, die ihn erst im Browser
+ * bauen, geben hier nichts her — dort bleibt es beim geprüften Ziel. Lieber
+ * weniger prüfen als etwas Falsches behaupten.
+ */
+function addressesInPrompt(html, siteUrl) {
+  const attribute = html.match(/<talk-it-over[^>]*\sprompt="([^"]*)"/i)
+  if (!attribute) return []
+
+  const host = new URL(siteUrl).origin
+  const found = attribute[1]
+    .replace(/&#10;/g, '\n')
+    .replace(/&amp;/g, '&')
+    .match(new RegExp(`${host}/[A-Za-z0-9/._-]+\\.[A-Za-z0-9]{1,6}`, 'g'))
+
+  return [...new Set(found || [])]
+}
+
+module.exports = { validate, REQUIRED, addressesInPrompt }
 
 // ─── Der Netzlauf ────────────────────────────────────────────────────────────
 
@@ -74,7 +94,18 @@ async function head(url) {
   }
 }
 
-const TEXT = /^text\/|^application\/(javascript|json|xml)$/
+/*
+ * Nur text/plain, nicht jedes text/*.
+ *
+ * Bis zum 14.09.2026 stand hier /^text\//, und genau deshalb hat diese Prüfung
+ * wochenlang nichts gemeldet: text/markdown lief glatt durch. Gemessen hat es
+ * ChatGPT dann anders gesehen — "400 Unsupported content-type", und statt das
+ * zu sagen, sucht es im Netz weiter und antwortet aus dem, was es findet.
+ *
+ * Ein Ziel, das nur einer der beiden Anbieter lesen kann, ist ein halber
+ * Button. Die Galerie behauptet aber einen ganzen.
+ */
+const READABLE = /^text\/plain$/
 
 async function checkSite(site) {
   const problems = []
@@ -93,8 +124,23 @@ async function checkSite(site) {
 
   const target = await head(site.target)
   if (target.status !== 200) problems.push(`Das Ziel des Buttons antwortet mit ${target.status}.`)
-  else if (!TEXT.test(target.type)) {
-    problems.push(`Das Ziel kommt als ${target.type} — ein Fetcher lehnt das ab.`)
+  else if (!READABLE.test(target.type)) {
+    problems.push(`Das Ziel kommt als ${target.type} — ChatGPT lehnt das ab und erfindet dann.`)
+  }
+
+  /*
+   * Das Ziel ist eine Adresse von vielen. Der Prompt nennt alle, und jede davon
+   * muss lesbar sein — sonst fehlt dem Leser genau der Teil, den er sucht.
+   *
+   * Auf rdmueller.github.io waren 31 von 33 Adressen .md, während das eine
+   * geprüfte Ziel unauffällig blieb. Eine Stichprobe von eins ist keine.
+   */
+  for (const url of addressesInPrompt(page.body, site.url)) {
+    const file = await head(url).catch((err) => ({ status: 0, type: err.message }))
+    if (file.status !== 200) problems.push(`Im Prompt: ${url} antwortet mit ${file.status}.`)
+    else if (!READABLE.test(file.type)) {
+      problems.push(`Im Prompt: ${url} kommt als ${file.type}.`)
+    }
   }
 
   const version = (script.body.match(/TalkItOver v([\d.]+)/) || [])[1]
