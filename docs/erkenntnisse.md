@@ -36,7 +36,8 @@ Adressen auf **fremden** Hosts enthält, und darum gebeten, jede davon zu holen.
 Keine einzige dieser Adressen stand in der Nachricht.
 
 Claude hat alle drei geholt. Auf die Frage, was es gehindert habe: „keine Sperre,
-kein Timeout, keine Domain-Beschränkung."
+kein Timeout, keine Domain-Beschränkung." ChatGPT ebenfalls alle drei, mit
+derselben Auskunft. Der Anbieter macht hier keinen Unterschied.
 
 Eine Tiefen-Disziplin hält es trotzdem ein. In den geholten Seiten standen
 weitere Adressen — Archiv-Links —, und die hat es **nicht** verfolgt, mit
@@ -46,6 +47,22 @@ gefragt, ob es ihnen folgen soll.
 Das ist der Unterschied, den wir übersehen hatten: Es ist eine
 **Entscheidung**, keine Sperre. Entscheidungen sehen von außen aus wie Regeln,
 bis jemand sie ein zweites Mal prüft.
+
+## „Abgerufen" heißt nicht, dass beide dasselbe gelesen haben
+
+Zwei der drei Adressen aus diesem Versuch sind 525-Byte-Stubs: ein
+`<meta http-equiv="refresh">`, ein Satz „Dieser Beitrag ist ins Archiv
+umgezogen", Titel „Umgezogen". Der Artikel steht woanders.
+
+Claude sah den Stub, meldete ihn als Stub und nannte die Archiv-Adresse.
+ChatGPT meldete, die Seite „enthält den Artikel" — und seine Quellenangabe trug
+den Titel der **Archivseite**, nicht „Umgezogen". Sein Fetcher ist der
+Weiterleitung gefolgt, Claudes nicht.
+
+Beide haben wahrheitsgemäß berichtet, was sie bekommen haben. Sie haben nur
+nicht dasselbe bekommen. **Wer Textfassungen veröffentlicht, sollte sie deshalb
+nicht hinter eine Meta-Weiterleitung legen** — sonst liest der eine Leser den
+Inhalt und der andere einen Einzeiler, und keiner von beiden merkt es.
 
 ## Der andere Anbieter verweigert nicht — er erfindet
 
