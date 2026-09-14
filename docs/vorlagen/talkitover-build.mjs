@@ -249,7 +249,9 @@ export function build(options) {
     // Grenze für die Bündel, meist das Verzeichnis. Ohne sie heißen alle
     // Bündel gleich, und das LLM kann nicht wählen, welches es holt.
     groupOf,
-    // Geraten, nicht gemessen: Gemessen ist nur, dass 25 KB durchgehen. Wer
+    // Gemessen am 14.09.2026: 61 KB kommen bei Claude vollständig an, 544 KB
+    // werden bei rund 100 KB abgeschnitten — still, ohne Hinweis. 60 KB liegt
+    // damit belegt im sicheren Bereich. Für ChatGPT ist die Zahl offen. Wer
     // eine Site mit anderer Textmenge baut, verschiebt die Grenze hier.
     bundleLimit,
     // '.txt' ist die einzige Endung, die beide Anbieter nehmen: GitHub Pages

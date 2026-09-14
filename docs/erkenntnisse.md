@@ -13,40 +13,87 @@ translation_label: English
 
 Dieses Projekt hat eine Website talkable gemacht — [Semantic
 Anchors](https://llm-coding.github.io/Semantic-Anchors/), 459 Seiten, 196
-Begriffe. Dabei sind vier Annahmen gefallen, die vorher plausibel klangen.
+Begriffe. Dabei sind Annahmen gefallen, die vorher plausibel klangen — darunter
+unsere eigene, die eine Zeit lang als Erkenntnis auf dieser Seite stand.
 
 Was hier steht, ist gemessen, nicht vermutet. Wo eine Zahl steht, kommt sie aus
 einem Versuch, und wo eine Annahme offen ist, sagen wir es.
 
-## Die Herkunft einer URL entscheidet, nicht ihr Format
+## Eine Beobachtung ist keine Regel. Diese hier stand einen Tag lang falsch hier
 
-Das LLM des Lesers holt eine URL, die **in der Nachricht stand**, die es bekommen
-hat. Eine URL, die es nur *in* einem geholten Dokument gefunden hat, verweigert
-es: „not in any prior search or fetch result".
+Hier stand: „Das LLM des Lesers holt eine URL, die in der Nachricht stand. Eine
+URL, die es nur *in* einem geholten Dokument gefunden hat, verweigert es." Das
+war die zentrale Erkenntnis dieses Projekts. Die ganze Architektur folgt daraus.
 
-Wir haben das für dieselbe Datei als `text/plain`, als `text/markdown` und als
-HTML mit echten `<a href>` geprüft. Identische Verweigerung. Es ist also kein
-Format-Problem, und kein besseres Dateiformat löst es.
+Sie stimmt nicht.
 
-**Die Konsequenz trifft die naheliegendste Architektur.** „Ein Index, und von
-dort verzweigen" ist zweistufig. Stufe eins ist erlaubt, Stufe zwei nicht. Ein
-Index aus Links *listet* eine Site, er *öffnet* sie nicht.
+Gesehen hatten wir eine echte Verweigerung, wörtlich „not in any prior search or
+fetch result". Daraus haben wir eine Regel gemacht — aus einer Beobachtung, ohne
+sie ein zweites Mal zu prüfen. Seit dem 13.09.2026 stand sie hier.
+
+Einen Tag später haben wir die Prüfung nachgeholt: eine Datei geholt, die drei
+Adressen auf **fremden** Hosts enthält, und darum gebeten, jede davon zu holen.
+Keine einzige dieser Adressen stand in der Nachricht.
+
+Claude hat alle drei geholt. Auf die Frage, was es gehindert habe: „keine Sperre,
+kein Timeout, keine Domain-Beschränkung."
+
+Eine Tiefen-Disziplin hält es trotzdem ein. In den geholten Seiten standen
+weitere Adressen — Archiv-Links —, und die hat es **nicht** verfolgt, mit
+Begründung: sie standen nicht in der Datei, um die es gebeten wurde. Es hat
+gefragt, ob es ihnen folgen soll.
+
+Das ist der Unterschied, den wir übersehen hatten: Es ist eine
+**Entscheidung**, keine Sperre. Entscheidungen sehen von außen aus wie Regeln,
+bis jemand sie ein zweites Mal prüft.
+
+## Der andere Anbieter verweigert nicht — er erfindet
+
+ChatGPT holt `text/markdown` gar nicht erst: „400 Unsupported content-type". Das
+allein wäre harmlos. Es sagt dem Leser aber nicht, dass es die Datei nicht hat.
+Es sucht im Netz weiter und antwortet aus dem, was es findet.
+
+Dreimal gefragt, dreimal falsch:
+
+| Gefragt | Antwort | In der Datei |
+|---|---|---|
+| Welche `Page:`-Adresse steht in dieser Datei? | `.../spec-driven-development` | drei andere; der genannte Begriff kommt **null mal** vor |
+| Wie heißt der letzte Anker in `design-principles-1`? | YAGNI, mit Quellenangabe | Postel's Law. YAGNI ist der letzte Anker der *anderen* Hälfte |
+| Was steht in diesem Rezept? | wich auf GitHub Raw aus, „129 Zeilen" | 143 Zeilen |
+
+Der zweite Fall ist der lehrreichste: richtige Kategorie, richtige Form, echter
+Ankername, Zitatmarke — nur die falsche Datei. Ohne die Datei in der Hand
+erkennt das niemand.
+
+Im Prompt dieses Projekts steht wörtlich „do not answer from memory and do not go
+looking elsewhere". Beides wurde getan. **Ein 400 ist kein sicheres Scheitern —
+es ist der Auslöser für eine erfundene Antwort.**
+
+Deshalb heißt jede Datei, die ein Prompt nennt, hier `.txt`. `text/plain` lesen
+beide Anbieter; `text/markdown` liest nur einer.
+
+## Die Architektur steht. Ihre Begründung war die falsche
+
+Alles in den Prompt, Tiefe 1, Bündel statt Index — das bleibt. Aber nicht mehr,
+weil Verweisen verboten wäre. Sondern weil:
+
+Der eine Anbieter folgt aus freien Stücken, und was eine Entscheidung ist, kann
+sich zwischen Versionen, Oberflächen und Einstellungen ändern. Der andere folgt
+gar nicht und erfindet an der Stelle etwas. Ein Entwurf, der auf keine der beiden
+Eigenschaften angewiesen ist, überlebt beide.
+
+Die Liste im Prompt bleibt damit eine Architekturentscheidung, keine Dekoration —
+nur trägt sie jetzt die Begründung, die sie wirklich hat.
 
 ## Also gehören die URLs in den Prompt
 
-Der erlaubte Kanal war die ganze Zeit da: Der Button schreibt den Prompt, der
+Der sichere Kanal war die ganze Zeit da: Der Button schreibt den Prompt, der
 Prompt wird zur Nachricht des Nutzers, und URLs in der Nachricht des Nutzers
-sind erlaubt. Bewiesen hatten wir das längst, ohne es zu merken — die Index-URL
-selbst wird ja geholt.
-
-Zwei Dinge, die dabei herauskamen:
+werden geholt — von beiden Anbietern, ohne Umweg und ohne Suche.
 
 Die Herkunft zählt **pro Nachricht**, nicht nur für die erste. Fügt der Leser
 später eine URL ein, wird sie geholt. Das ist der Notausgang, wenn etwas fehlt,
 und der Prompt sagt dem LLM, es soll danach fragen statt zu raten.
-
-Was der Prompt nennt, ist erreichbar. Was er auslässt, vielleicht nicht. Damit
-wird die Liste im Prompt zur Architekturentscheidung — nicht zu Dekoration.
 
 ## Suchen löst die Herkunft und verliert die Quelle
 
@@ -103,8 +150,8 @@ ein ganzer. Das LLM würde es nicht merken und der Leser auch nicht.
 Ergebnis: 20 Dateien, 510 KB, größte 40 KB. Danach liegt nichts mehr hinter
 einem Link, den das LLM nicht holen darf.
 
-Ob 40 KB unter der Abschneidegrenze liegen, wissen wir nicht. Gemessen ist nur,
-dass 25 KB durchgehen.
+Die Bündelgrenze liegt inzwischen bei 60 KB, und dass sie hält, ist gemessen —
+siehe weiter unten.
 
 ## Was ausgeliefert wird, muss auch lesbar sein
 
@@ -179,15 +226,30 @@ den Generator **mitbringt**: Es liest die HTML-Dateien, die tatsächlich da sind
 schreibt Textfassungen und baut den Prompt. Aus 472 KB HTML wurden 91 KB Text —
 der Rest war auf jeder Seite dasselbe Menü.
 
+## Die Abschneidegrenze liegt bei rund 100 KB, nicht bei 40
+
+Am 14.09.2026 gemessen, beide Male dieselbe Frage: „Wie heißt der letzte Eintrag
+in dieser Datei?" Wer die Antwort weiß, weiß, ob die Datei ganz angekommen ist.
+
+| Datei | Größe | Ergebnis bei Claude |
+|---|---|---|
+| ein Bündel | 61 KB | **vollständig** — letzter Eintrag richtig benannt |
+| llms.txt | 544 KB | abgeschnitten mitten in der dritten Kategorie, bei rund 100 KB |
+
+Unsere Bündelgrenze von 60 KB liegt damit belegt im sicheren Bereich, nicht mehr
+geschätzt. Höher zu gehen wäre möglich — wir tun es nicht: Der Gewinn wären ein
+bis zwei Einträge weniger im Prompt, der Einsatz eine Datei, von der wir dann
+wieder raten müssten, ob sie ankommt. Abschneiden ist still. Eine halbe Datei
+liest sich wie eine ganze.
+
+Für ChatGPT ist die Zahl weiter offen. Dort scheiterte der Abruf schon am
+Content-Type, bevor die Länge eine Rolle spielte.
+
 ## Was offen ist
 
-Zwei Zahlen sind geraten, und beide sind messbar:
+Die Grenze der Provider-URL ist weiter geraten. 6000 Zeichen ist ein
+konservativer Wert, kein gemessener. Ein Button mit absichtlich langem Prompt
+zeigt, ob im Chat noch alles ankommt — der Versuch steht aus.
 
-Die Grenze der Provider-URL. Ein Button mit absichtlich langem Prompt zeigt, ob
-im Chat noch alles ankommt.
-
-Die Abschneidegrenze beim Abruf. Eine Frage, deren Antwort im letzten Eintrag
-eines großen Bündels steht, zeigt, ob 40 KB durchgehen.
-
-Bis dahin stehen die konservativen Werte — und der Test, der sie bewacht, fällt
-um, bevor die Leserschaft es merkt.
+Bis dahin gilt der konservative Wert, und der Test, der ihn bewacht, fällt um,
+bevor die Leserschaft es merkt.

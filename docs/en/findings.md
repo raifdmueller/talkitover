@@ -14,41 +14,84 @@ translation_label: Deutsch
 
 This project made one website talkable — [Semantic
 Anchors](https://llm-coding.github.io/Semantic-Anchors/), 459 pages, 196 named
-terms. Four assumptions fell along the way, all of which had sounded reasonable
-beforehand.
+terms. Assumptions fell along the way, all of which had sounded reasonable
+beforehand — our own among them, after it had stood on this page as a finding.
 
 What follows is measured, not assumed. Where there is a number, it came from an
 experiment, and where an assumption is still open, we say so.
 
-## A URL's provenance decides, not its format
+## One observation is not a rule. This one stood here wrong for a day
 
-The reader's LLM fetches a URL that **stood in the message it was given**. A URL
-it only found *inside* a document it fetched, it refuses: "not in any prior
-search or fetch result".
+This page used to say: "The reader's LLM fetches a URL that stood in the message
+it was given. A URL it found only *inside* a fetched document, it refuses." That
+was this project's central finding. The whole architecture follows from it.
 
-We checked the same file as `text/plain`, as `text/markdown`, and as HTML with
-real `<a href>` links. Identical refusal. So this is not a format problem, and
-no better file format solves it.
+It is not true.
 
-**The consequence hits the most obvious architecture.** "One index, then branch
-from there" has two steps. Step one is allowed, step two is not. An index of
-links *lists* a site; it does not *open* it.
+We had seen a real refusal, word for word: "not in any prior search or fetch
+result". From that one observation we made a rule, without testing it a second
+time. It stood here from 2026-09-13.
+
+A day later we ran the test we owed it: fetch a file that contains three
+addresses on **foreign** hosts, and ask for each of them to be fetched. Not one
+of those addresses stood in the message.
+
+Claude fetched all three. Asked what had stopped it: "no block, no timeout, no
+domain restriction."
+
+It does keep a depth discipline. The fetched pages contained further addresses —
+archive links — and it did **not** follow them, with a reason: they were not in
+the file it had been asked about. It asked whether it should.
+
+That is the difference we had missed: it is a **choice**, not a block. Choices
+look like rules from the outside, until somebody tests them a second time.
+
+## The other provider does not refuse — it invents
+
+ChatGPT will not fetch `text/markdown` at all: "400 Unsupported content-type".
+That alone would be harmless. But it does not tell the reader it lacks the file.
+It searches the web instead and answers from whatever it finds.
+
+Asked three times, wrong three times:
+
+| Asked | Answered | In the file |
+|---|---|---|
+| Which `Page:` address is in this file? | `.../spec-driven-development` | three others; that term appears **zero** times |
+| What is the last anchor in `design-principles-1`? | YAGNI, with a citation | Postel's Law. YAGNI is the last anchor of the *other* half |
+| What is in this recipe? | fell back to GitHub raw, "129 lines" | 143 lines |
+
+The second case teaches the most: right category, right shape, a real anchor
+name, a citation mark — only the wrong file. Nobody catches that without the file
+in hand.
+
+This project's own prompt says, word for word, "do not answer from memory and do
+not go looking elsewhere". Both were done. **A 400 is not a safe failure — it is
+the trigger for an invented answer.**
+
+That is why every file a prompt names here ends in `.txt`. Both providers read
+`text/plain`; only one reads `text/markdown`.
+
+## The architecture stands. Its reasoning was the wrong one
+
+Everything in the prompt, depth 1, bundles instead of an index — that stays. But
+no longer because following a link is forbidden. Because:
+
+One provider follows of its own accord, and what is a choice can change between
+versions, surfaces and settings. The other does not follow at all and invents
+something in that place. A design that depends on neither property survives both.
+
+The list in the prompt stays an architectural decision rather than decoration —
+it just now carries the reason it actually has.
 
 ## So the URLs belong in the prompt
 
-The permitted channel had been there all along: the button writes the prompt,
-the prompt becomes the user's message, and URLs in the user's message are
-allowed. We had proved it without noticing — the index URL itself does get
-fetched.
+The safe channel was there all along: the button writes the prompt, the prompt
+becomes the user's message, and URLs in the user's message get fetched — by both
+providers, with no detour and no search.
 
-Two things came out of this:
-
-Provenance counts **per message**, not only for the first one. When the reader
-pastes a URL later, it is fetched. That is the emergency exit when something is
-missing, and the prompt tells the LLM to ask for it rather than guess.
-
-Whatever the prompt names is reachable. Whatever it leaves out may not be. That
-turns the list in the prompt into an architectural decision, not decoration.
+Provenance counts **per message**, not only for the first. If the reader pastes a
+URL later, it gets fetched. That is the emergency exit when something is missing,
+and the prompt tells the LLM to ask for it rather than guess.
 
 ## Search solves provenance and loses the source
 
@@ -104,8 +147,8 @@ would not notice, and neither would the reader.
 Result: 20 files, 510 KB, largest 40 KB. After that, nothing sits behind a link
 the LLM may not follow.
 
-Whether 40 KB stays under the truncation limit, we do not know. All we have
-measured is that 25 KB goes through.
+The bundle limit is 60 KB by now, and that it holds is measured — see further
+down.
 
 ## What you serve has to be readable
 
@@ -179,15 +222,29 @@ reads the HTML files that are actually there, writes text versions, and builds
 the prompt. 472 KB of HTML turned into 91 KB of text — the rest was the same
 menu on every page.
 
+## The truncation limit is around 100 KB, not 40
+
+Measured on 2026-09-14, the same question both times: "What is the last entry in
+this file?" Whoever knows the answer knows whether the file arrived whole.
+
+| File | Size | Result in Claude |
+|---|---|---|
+| one bundle | 61 KB | **complete** — last entry named correctly |
+| llms.txt | 544 KB | cut off inside the third category, at roughly 100 KB |
+
+Our 60 KB bundle limit is therefore demonstrably in the safe range, not guessed.
+Going higher would be possible — we do not: the gain would be one or two fewer
+entries in the prompt, the stake a file we would again have to guess about.
+Truncation is silent. Half a file reads like a whole one.
+
+For ChatGPT the number is still open. There the fetch failed at the content type,
+before length could matter.
+
 ## What is still open
 
-Two numbers are guesses, and both are measurable:
+The provider URL limit is still a guess. 6000 characters is a conservative value,
+not a measured one. A button with a deliberately long prompt would show whether
+everything still arrives in the chat — that test is outstanding.
 
-The provider URL limit. A button with a deliberately long prompt shows whether
-everything still arrives in the chat.
-
-The fetch truncation limit. A question whose answer sits in the last entry of a
-large bundle shows whether 40 KB goes through.
-
-Until then the conservative values stand — and the test that guards them fails
-before any reader notices.
+Until then the conservative value stands, and the test that guards it fails
+before the readership notices.
