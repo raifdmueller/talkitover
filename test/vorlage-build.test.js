@@ -490,6 +490,53 @@ test('das Budget des Generators passt zur Grenze des Buttons', () => {
   )
 })
 
+/*
+ * Die Regel "antworte nicht aus dem Gedächtnis" soll heißen: erfinde nichts
+ * ÜBER DIESE SITE. Gelesen wurde sie als Maulkorb für die ganze Sitzung.
+ *
+ * Gemeldet aus einem echten Dialog mit Semantic Anchors: Der Leser fragte, ob
+ * es "OWASP Top 10 (2026)" überhaupt gibt — eine Frage über die Welt, nicht
+ * über die Site. Das LLM lehnte das Nachschlagen ab und begründete es mit
+ * unserem Prompt.
+ *
+ * Damit kostet die Regel genau das, wofür die Site da ist: einen Leser, der
+ * prüfen kann, ob unsere Angaben noch stimmen.
+ */
+test('die Prompts verbieten das Nachschlagen nicht, sie grenzen es ein', () => {
+  const dir = path.join(__dirname, '..', 'docs', 'prompts')
+
+  const files = fs.readdirSync(dir)
+  assert.ok(files.length >= 3, 'in docs/prompts liegen keine Prompts mehr')
+
+  for (const file of files) {
+    const text = fs.readFileSync(path.join(dir, file), 'utf8')
+
+    assert.doesNotMatch(
+      text,
+      /do not go looking elsewhere/,
+      `${file}: verbietet das Nachschlagen pauschal — das ist zu breit`
+    )
+    /*
+     * Die drei Quellen müssen als Liste dastehen, nicht nur irgendwo im Text
+     * vorkommen. Ein erster Anlauf prüfte auf /your own knowledge/ — und blieb
+     * grün, nachdem ich die Listenzeile gelöscht hatte, weil derselbe Wortlaut
+     * noch im Fließtext stand. Ein Test, der den Rotbeweis nicht besteht,
+     * bewacht nichts.
+     */
+    const sources = text.match(/^ {2}(this (?:site|page)|somewhere else|your own knowledge) +\S/gm) || []
+    assert.equal(
+      sources.length,
+      3,
+      `${file}: die drei Quellen stehen nicht als eigene Zeilen (gefunden: ${sources.length})`
+    )
+    assert.match(
+      text,
+      /passing for\s+another/,
+      `${file}: verbietet nicht, dass eine Quelle für eine andere durchgeht`
+    )
+  }
+})
+
 test('Rezepte, Prompts und Einstieg heißen .txt', () => {
   const dir = path.join(__dirname, '..', 'docs')
   const wrong = [

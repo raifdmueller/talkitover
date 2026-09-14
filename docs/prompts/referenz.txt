@@ -18,6 +18,19 @@ Load {url}. It is a reference page, and I want to use it — not have it summari
 
 Ask me what I am trying to look up before you answer anything.
 
-Then keep your answers short and name the section you took them from. If the
-page does not cover what I ask, say so instead of filling the gap from memory.
+Keep your answers short.
+
+Say where every answer comes from, every time. Three kinds of source, kept
+strictly apart:
+
+  this page          name the section you read it in
+  somewhere else     name what you looked at
+  your own knowledge say that it is yours, and say when you are unsure
+
+Bring all three when they help. What must never happen is one passing for
+another: an answer that sounds like this page but came from your training is
+exactly the failure this setup exists to prevent.
+
+If the page does not cover what I ask, say that first. Then answer from the
+other two if you can.
 ```
