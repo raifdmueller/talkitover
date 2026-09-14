@@ -17,11 +17,26 @@ STEP 1 — Check the preconditions.
   (b) missing -> STOP. Say that the project builds documents but not a site,
   and that a button needs published pages to point at. Change nothing.
 
-STEP 2 — Do NOT trust the sitemap.
+STEP 2 — Find out WHICH copy is the current one.
+
+  A domain may serve several. doctoolchain.org publishes v1.3.x, v2.0.x and
+  v4.0.x side by side — and the current docs are v2.0.x. v4.0.x is a frozen
+  copy that no build writes any more; it is 30 pages behind, and nothing
+  updates it.
+
+  We got this wrong ourselves: the highest version number looked like the
+  newest site, and we mirrored 109 stale pages before noticing.
+
+  Do not read the version out of the path. Fetch the domain root and see where
+  it sends a reader — usually a redirect or a link. Build the button for THAT
+  copy. A button on a frozen copy answers from documentation nobody maintains,
+  and it looks exactly like a working one.
+
+STEP 3 — Do NOT trust the sitemap.
 
   Measured on doctoolchain.org, three sites, 2026-09-14:
 
-    docToolchain v4   109 entries, all of them https://localhost/...
+    docToolchain     109 entries, all of them https://localhost/...
     dacli              25 entries, all of them https://jbake.org/...
     Bausteinsicht      53 entries, correct
     all three          one dead entry each (lunrjsindex.html)
@@ -30,18 +45,22 @@ STEP 2 — Do NOT trust the sitemap.
   an entry that answers 404. A generator that reads the sitemap would produce a
   prompt full of addresses that lead nowhere.
 
+  Those three are fixed by now — we reported them and the fix shipped. The rule
+  stays, because the cause can recur anywhere: a baseUrl is set by hand once,
+  and nothing in the build checks it against where the pages actually answer.
+
   Walk the built directory instead. The files that are there are the truth.
 
   While you are at it: tell the maintainer. A sitemap pointing at localhost is
   broken for search engines too, and that is worth more to them than a button.
 
-STEP 3 — Find the content container.
+STEP 4 — Find the content container.
 
   Fetch two pages of the built site and find the element that wraps the article.
   On all three docToolchain sites it is a single `<main>`. Left out, every text
   version carries the same menu, and a bundle is half navigation.
 
-STEP 4 — Vendor talkitover.js and install the generator.
+STEP 5 — Vendor talkitover.js and install the generator.
 
   Download https://raifdmueller.github.io/talkitover/talkitover.js and
   https://raifdmueller.github.io/talkitover/vorlagen/talkitover-build.mjs and
@@ -53,14 +72,14 @@ STEP 4 — Vendor talkitover.js and install the generator.
     out          where the text versions go, inside the published tree
     siteUrl      the site's address, with a trailing slash
     sections     the landing pages, most important first, path exact
-    container    the element from STEP 3
+    container    the element from STEP 4
     extension    `.txt`
-    groupOf      see STEP 5 — this one decides whether the prompt is usable
-    bundleLimit  see STEP 6
+    groupOf      see STEP 6 — this one decides whether the prompt is usable
+    bundleLimit  see STEP 7
     prose        the first fenced code block of
                  https://raifdmueller.github.io/talkitover/prompts/site.txt
 
-STEP 5 — Give the bundles names, or the prompt is useless.
+STEP 6 — Give the bundles names, or the prompt is useless.
 
   A docToolchain site is large. Without a grouping, the generator packs purely
   by size, and the prompt ends up naming "Weitere Seiten 17" thirty-eight times.
@@ -69,12 +88,12 @@ STEP 5 — Give the bundles names, or the prompt is useless.
 
   Group by the structure the site already has: the directory. One level is
   usually right. On doctoolchain.org that gives 21 groups with names a reader
-  recognises — `dacli · spec`, `docToolchain v4 · 015_tasks`.
+  recognises — `dacli · spec`, `docToolchain · 015_tasks`.
 
   Two levels split too finely (`dacli · arc42` held a single page), no level at
   all gives no names at all.
 
-STEP 6 — Take the SMALLEST bundle limit that fits.
+STEP 7 — Take the SMALLEST bundle limit that fits.
 
   Two limits work against each other. The provider URL must stay under 6000
   characters or the button falls back to the clipboard. The other end truncates
@@ -96,7 +115,7 @@ STEP 6 — Take the SMALLEST bundle limit that fits.
   Nothing fits at any limit -> the site is too large for one button. Say so, and
   propose one button per product instead of one for the whole domain.
 
-STEP 7 — Wire it into the build.
+STEP 8 — Wire it into the build.
 
   The generator needs the built site, so it runs AFTER the site task and BEFORE
   publishing. Where that hook lives depends on how the project publishes:
@@ -111,7 +130,7 @@ STEP 7 — Wire it into the build.
   Ignore the generated files in version control. They are derived, and they
   change whenever the content does.
 
-STEP 8 — Place the button.
+STEP 9 — Place the button.
 
   Into the template the site already uses for every page — docToolchain sites
   have one. One button for the whole site, at the top where a reader decides
@@ -121,7 +140,7 @@ STEP 8 — Place the button.
   written as `&#10;`. A blank line inside an HTML attribute ends the element in
   most template pipelines and tears the page apart at exactly that spot.
 
-STEP 9 — Check your own work, then open the pull request.
+STEP 10 — Check your own work, then open the pull request.
 
   Before committing, verify:
     [ ] The diff contains the vendored file, the generator, its configuration,
@@ -136,7 +155,7 @@ STEP 9 — Check your own work, then open the pull request.
 
   Then open a pull request that says, in this order: what the reader gets, which
   files changed, that nothing has to be operated, and how to undo it. Name the
-  numbers the generator reported, and mention the sitemap finding from STEP 2
+  numbers the generator reported, and mention the sitemap finding from STEP 3
   separately — it is a bug of theirs, not of this change.
 
 If you stop at any step, say which step, which condition failed, and what the
