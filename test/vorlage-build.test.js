@@ -434,6 +434,35 @@ test('die ausgelieferte Include-Vorlage und der eigene Include tun dasselbe', ()
  * rendert Jekyll .md ohne Front Matter auf GitHub Pages als eigene Seite — die
  * stand dann ein zweites Mal im Prompt.
  */
+/*
+ * Ein Querverweis auf einen Schritt, den es nicht gibt, schickt Claude Code ins
+ * Leere — und zwar mitten in einem Lauf in einem fremden Repo, wo niemand mehr
+ * nachsehen kann, was gemeint war. Beim Einfügen eines neuen Schritts ist genau
+ * das fast passiert: Die Nummern verschieben sich, die Verweise nicht.
+ */
+test('jeder Querverweis in einem Rezept zeigt auf einen Schritt, den es gibt', () => {
+  const dir = path.join(__dirname, '..', 'docs', 'rezepte')
+
+  for (const file of fs.readdirSync(dir)) {
+    const text = fs.readFileSync(path.join(dir, file), 'utf8')
+    const steps = new Set(
+      [...text.matchAll(/^STEP (\d+) —/gm)].map((found) => Number(found[1]))
+    )
+    if (steps.size === 0) continue
+
+    assert.deepEqual(
+      [...steps].sort((a, b) => a - b),
+      [...steps].map((_, index) => index + 1),
+      `${file}: die Schritte sind nicht lückenlos von 1 an durchnummeriert`
+    )
+
+    const referenced = [...text.matchAll(/(?:see|from) STEP (\d+)/g)].map((f) => Number(f[1]))
+    for (const number of referenced) {
+      assert.ok(steps.has(number), `${file}: Verweis auf STEP ${number}, den es nicht gibt`)
+    }
+  }
+})
+
 test('Rezepte, Prompts und Einstieg heißen .txt', () => {
   const dir = path.join(__dirname, '..', 'docs')
   const wrong = [
