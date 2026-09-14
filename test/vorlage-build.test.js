@@ -463,6 +463,33 @@ test('jeder Querverweis in einem Rezept zeigt auf einen Schritt, den es gibt', (
   }
 })
 
+/*
+ * Der Generator baut den Prompt, der Button liefert ihn aus. Wäre das Budget
+ * des Generators größer als die Grenze des Buttons, entstünden Prompts, die der
+ * Button stillschweigend auf die Zwischenablage umleitet — der Leser bekommt
+ * einen Klick mehr, und niemand erfährt, warum.
+ *
+ * Die beiden Zahlen stehen in verschiedenen Dateien und in verschiedenen
+ * Sprachen. Genau so driften sie auseinander.
+ */
+test('das Budget des Generators passt zur Grenze des Buttons', () => {
+  const component = fs.readFileSync(path.join(__dirname, '..', 'docs', 'talkitover.js'), 'utf8')
+  const generator = fs.readFileSync(
+    path.join(__dirname, '..', 'docs', 'vorlagen', 'talkitover-build.mjs'),
+    'utf8'
+  )
+
+  const maxUrlLength = Number(component.match(/MAX_URL_LENGTH = (\d+)/)?.[1])
+  const urlBudget = Number(generator.match(/^export const URL_BUDGET = (\d+)/m)?.[1])
+
+  assert.ok(maxUrlLength, 'MAX_URL_LENGTH steht nicht mehr in talkitover.js')
+  assert.ok(urlBudget, 'URL_BUDGET steht nicht mehr im Generator')
+  assert.ok(
+    urlBudget <= maxUrlLength,
+    `Der Generator baut bis ${urlBudget}, der Button nimmt nur ${maxUrlLength}`
+  )
+})
+
 test('Rezepte, Prompts und Einstieg heißen .txt', () => {
   const dir = path.join(__dirname, '..', 'docs')
   const wrong = [

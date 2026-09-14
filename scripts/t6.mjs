@@ -1,14 +1,20 @@
 /**
  * T6 — die Grenze der Provider-URL messen, statt sie zu raten.
  *
- * MAX_URL_LENGTH steht in talkitover.js auf 6000. Der Wert war konservativ
- * gewählt und nie gemessen worden — und er ist mindestens um das Fünffache zu
- * vorsichtig: Claude wie ChatGPT nehmen 30000 Zeichen vollständig an.
+ * ERGEBNIS, 14.09.2026 — die Messung ist abgeschlossen:
  *
- * Angehoben wird er trotzdem noch nicht, aus zwei Gründen. 30000 ist als
- * Untergrenze gemessen, nicht als Grenze. Und die wirksame Grenze ist nicht
- * die des Anbieters, sondern das Minimum aus Anbieter und BROWSER des Lesers —
- * und dessen Browser kennen wir nicht.
+ *     30000   beide Anbieter vollständig, Browser navigiert
+ *     50000   beide Anbieter vollständig, Browser navigiert
+ *    100000   der BROWSER lehnt ab, der Anbieter sieht den Prompt nie
+ *
+ * Die bindende Grenze ist nicht die des Anbieters, sondern die des Browsers —
+ * und zwar des Browsers, den der LESER benutzt, nicht der, in dem wir gemessen
+ * haben. Genauer als "zwischen 50000 und 100000" hilft deshalb nicht weiter:
+ * Ein strengerer Browser verschiebt die Zahl ohnehin.
+ *
+ * MAX_URL_LENGTH steht seither auf 20000 statt 6000 — deutlich unter der Hälfte
+ * dessen, was gehalten hat, nicht an der Kante. Der alte Wert war geraten und
+ * um das Achtfache zu niedrig.
  *
  * Diese Seite baut Links mit Prompts bekannter Länge. Sie benutzt bewusst NICHT
  * das Web Component: das kappt selbst bei 6000 und fiele auf die Zwischenablage
@@ -173,17 +179,30 @@ Chat mit einem Prompt genau der angegebenen Länge.</strong></p>
 kennen den Browser des Lesers nicht — für den Button zählt deshalb die
 niedrigste, nicht die höchste.</p>
 
-<p>Stand 14.09.2026:</p>
+<p><strong>Die Messung ist abgeschlossen.</strong> Ergebnis vom 14.09.2026:</p>
 
-<ul>
-  <li><strong>30.000 und 50.000:</strong> beide Anbieter vollständig, und der
-      Browser hat nicht abgelehnt.</li>
-  <li><strong>200.000:</strong> der Browser lehnt ab, der Anbieter sieht den
-      Prompt nie.</li>
-</ul>
+<table>
+  <thead><tr><th scope="col">Länge</th><th scope="col">Claude</th><th scope="col">ChatGPT</th><th scope="col">Browser</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">30.000</th><td>vollständig</td><td>vollständig</td><td>navigiert</td></tr>
+    <tr><th scope="row">50.000</th><td>vollständig</td><td>vollständig</td><td>navigiert</td></tr>
+    <tr><th scope="row">100.000</th><td>nie gesehen</td><td>nie gesehen</td><td><strong>lehnt ab</strong></td></tr>
+  </tbody>
+</table>
 
-<p>Die Grenze liegt also zwischen 50.000 und 200.000 — und wir wissen noch
-nicht, welche der beiden Grenzen dort zuerst greift.</p>
+<p>Die bindende Grenze ist die des <strong>Browsers</strong>, nicht die des
+Anbieters — und zwar die des Browsers, den der Leser benutzt, nicht die des
+Browsers, in dem wir gemessen haben. Genauer als „zwischen 50.000 und 100.000"
+hilft deshalb nicht weiter.</p>
+
+<p><code>MAX_URL_LENGTH</code> steht seither auf <strong>20.000</strong> statt
+6000: deutlich unter der Hälfte dessen, was gehalten hat, nicht an der Kante.
+Wird sie überschritten, geht der Prompt in die Zwischenablage — ein Klick mehr,
+nichts verloren. Diese sanfte Rückfallebene ist der Grund, warum die Zahl
+überhaupt so hoch stehen darf.</p>
+
+<p>Die Links bleiben stehen: Wer die Messung in einem anderen Browser
+wiederholen will, braucht sie.</p>
 
 <p>Die Links benutzen bewusst nicht den TalkItOver-Button: der kappt selbst bei
 6000 Zeichen und fiele auf die Zwischenablage zurück. Wir würden dann unsere

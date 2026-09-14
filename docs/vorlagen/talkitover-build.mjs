@@ -17,7 +17,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 /** Über dieser Länge fällt der Button auf die Zwischenablage zurück. */
-export const URL_BUDGET = 6000
+/*
+ * Muss zu MAX_URL_LENGTH in talkitover.js passen: Ein Prompt, den der Generator
+ * baut und der Button dann ablehnt, fiele stillschweigend auf die Zwischenablage
+ * zurück. Gemessen am 14.09.2026, siehe /t6.html — nicht mehr geraten.
+ */
+export const URL_BUDGET = 20000
 
 /** Ab hier schneidet die Gegenseite lange Dokumente ab — konservativ gewählt. */
 export const BUNDLE_LIMIT = 40 * 1024
