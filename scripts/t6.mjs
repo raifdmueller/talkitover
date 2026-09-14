@@ -173,8 +173,17 @@ Chat mit einem Prompt genau der angegebenen Länge.</strong></p>
 kennen den Browser des Lesers nicht — für den Button zählt deshalb die
 niedrigste, nicht die höchste.</p>
 
-<p>Stand 14.09.2026: <strong>Beide Anbieter haben 30.000 vollständig
-angenommen.</strong> 200.000 scheitert am Browser. Dazwischen ist offen.</p>
+<p>Stand 14.09.2026:</p>
+
+<ul>
+  <li><strong>30.000 und 50.000:</strong> beide Anbieter vollständig, und der
+      Browser hat nicht abgelehnt.</li>
+  <li><strong>200.000:</strong> der Browser lehnt ab, der Anbieter sieht den
+      Prompt nie.</li>
+</ul>
+
+<p>Die Grenze liegt also zwischen 50.000 und 200.000 — und wir wissen noch
+nicht, welche der beiden Grenzen dort zuerst greift.</p>
 
 <p>Die Links benutzen bewusst nicht den TalkItOver-Button: der kappt selbst bei
 6000 Zeichen und fiele auf die Zwischenablage zurück. Wir würden dann unsere
