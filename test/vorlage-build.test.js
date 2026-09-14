@@ -51,6 +51,41 @@ test('contentOf wirft Gerüst weg und behält den Inhalt', async () => {
   assert.doesNotMatch(text, /</)
 })
 
+/*
+ * Eine Textfassung trägt den Inhalt der Seite, nicht ihre Bedienelemente.
+ *
+ * Der Generator liest das HTML des ersten Jekyll-Durchlaufs — und darin gibt es
+ * den Button noch nicht, weil dieses Script seine Daten erst schreibt. Stehen
+ * bleibt, was das Template stattdessen rendert. Genau so kam der Satz "Der
+ * Button fehlt: npm run build:talkitover lief nicht ..." in die ausgelieferte
+ * Textfassung der Startseite und stand dort für jeden Leser.
+ *
+ * Geprüft wird deshalb die ausgelieferte Include-Datei selbst, nicht ein
+ * Beispiel daneben: Nur so fällt der Test um, wenn jemand den Ersatztext
+ * wieder in ein Tag setzt, das der Generator durchlässt.
+ */
+test('der Ersatztext des Includes landet nicht in der Textfassung', async () => {
+  const { contentOf } = await load()
+  const include = fs.readFileSync(
+    path.join(__dirname, '..', 'docs/_includes/talkitover.html'),
+    'utf8'
+  )
+
+  /* Was Jekyll rendert, wenn die Daten fehlen: der else-Zweig ohne Liquid. */
+  const fallback = include
+    .slice(include.indexOf('{%- else -%}'))
+    .replace(/\{%-?[\s\S]*?-?%\}/g, '')
+
+  assert.match(fallback, /Button fehlt/, 'der else-Zweig sagt weiterhin Bescheid')
+
+  const text = contentOf(`<main><h1>Titel</h1>${fallback}<p>Inhalt.</p></main>`)
+
+  assert.match(text, /# Titel/)
+  assert.match(text, /Inhalt\./)
+  assert.doesNotMatch(text, /Button fehlt/)
+  assert.doesNotMatch(text, /build:talkitover/)
+})
+
 test('contentOf kommt ohne den Container aus', async () => {
   const { contentOf } = await load()
 
@@ -223,7 +258,7 @@ test('build nennt schon-Text-Dateien unter ihrer eigenen Adresse', async () => {
 
   const urls = result.entries.map((e) => e.url)
   assert.ok(urls.includes('https://example.org/roh.md'), 'die Rohdatei unter ihrer Adresse')
-  assert.ok(urls.includes('https://example.org/text/seite.md'), 'die HTML-Seite als Textfassung')
+  assert.ok(urls.includes('https://example.org/text/seite.txt'), 'die HTML-Seite als Textfassung')
   assert.equal(fs.existsSync(path.join(dir, 'text', 'roh.md')), false, 'keine Kopie der Rohdatei')
   fs.rmSync(dir, { recursive: true })
 })
@@ -294,7 +329,20 @@ test('build kann die Textfassungen unter einer anderen Endung ablegen', async ()
   fs.rmSync(dir, { recursive: true })
 })
 
-test('ohne Angabe bleibt es bei .md, damit bestehende Sites nicht brechen', async () => {
+/*
+ * Die Voreinstellung war '.md'. Sie ist es nicht mehr.
+ *
+ * Am 14.09.2026 gemessen: GitHub Pages liefert .md als text/markdown aus, und
+ * ChatGPT antwortet darauf mit "400 Unsupported content-type". Es sagt das aber
+ * nicht — es sucht weiter und antwortet aus dem, was es findet. Dreimal gefragt,
+ * dreimal falsch, jedes Mal plausibel: einmal die Nachbardatei statt der
+ * gefragten, einmal eine Adresse, die in der Datei null mal vorkommt.
+ *
+ * Eine Voreinstellung, die eine Site für einen Anbieter unlesbar macht und
+ * stattdessen Erfundenes liefert, ist keine sichere Voreinstellung. '.txt'
+ * nehmen beide.
+ */
+test('ohne Angabe ist es .txt — der einzige Typ, den beide Anbieter nehmen', async () => {
   const { build } = await load()
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tio-'))
   fs.writeFileSync(path.join(dir, 'seite.html'), '<title>Seite</title><main><p>Inhalt.</p></main>')
@@ -306,7 +354,7 @@ test('ohne Angabe bleibt es bei .md, damit bestehende Sites nicht brechen', asyn
     prose: 'Load {url}.\n\n{pages}\n',
   })
 
-  assert.match(result.entries[0].url, /\.md$/)
+  assert.match(result.entries[0].url, /\.txt$/)
   fs.rmSync(dir, { recursive: true })
 })
 
@@ -372,12 +420,41 @@ test('die ausgelieferte Include-Vorlage und der eigene Include tun dasselbe', ()
  * und schlimmer: Claude Code liest diese Dateien und würde die Schutzmarken
  * mitkopieren.
  */
+/*
+ * Rezepte, Prompts und der Einstieg müssen .txt heißen.
+ *
+ * GitHub Pages liefert .md als text/markdown aus. ChatGPT antwortet darauf mit
+ * "400 Unsupported content-type" — und sagt es dem Leser nicht, sondern sucht
+ * im Netz weiter und antwortet aus dem, was es findet. Am 14.09.2026 dreimal
+ * gemessen, dreimal falsch: einmal die Nachbardatei statt der gefragten, einmal
+ * eine Adresse, die in der Datei null mal vorkommt. Ohne die Datei in der Hand
+ * ist das nicht zu erkennen.
+ *
+ * .txt kommt als text/plain und wird von beiden Anbietern gelesen. Nebenbei
+ * rendert Jekyll .md ohne Front Matter auf GitHub Pages als eigene Seite — die
+ * stand dann ein zweites Mal im Prompt.
+ */
+test('Rezepte, Prompts und Einstieg heißen .txt', () => {
+  const dir = path.join(__dirname, '..', 'docs')
+  const wrong = [
+    ...fs.readdirSync(path.join(dir, 'rezepte')).map((f) => `rezepte/${f}`),
+    ...fs.readdirSync(path.join(dir, 'prompts')).map((f) => `prompts/${f}`),
+    ...fs.readdirSync(dir).filter((f) => f.startsWith('einstieg.')),
+  ].filter((f) => !f.endsWith('.txt'))
+
+  assert.deepEqual(
+    wrong,
+    [],
+    'Diese Dateien kämen als text/markdown und wären für ChatGPT unerreichbar'
+  )
+})
+
 test('in Rezepten und Prompts steht kein Liquid', () => {
   const dir = path.join(__dirname, '..', 'docs')
   const files = [
     ...fs.readdirSync(path.join(dir, 'rezepte')).map((f) => ['rezepte', f]),
     ...fs.readdirSync(path.join(dir, 'prompts')).map((f) => ['prompts', f]),
-    ['einstieg.md'],
+    ['einstieg.txt'],
   ]
 
   for (const parts of files) {

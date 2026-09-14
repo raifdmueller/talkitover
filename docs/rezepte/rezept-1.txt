@@ -59,7 +59,7 @@ STEP 4 — Install the generator.
                 repeats, e.g. / \| Example Site$/
     container   the element from STEP 2
     prose       the first fenced code block of
-                https://raifdmueller.github.io/talkitover/prompts/site.md
+                https://raifdmueller.github.io/talkitover/prompts/site.txt
     dates       optional: url -> date, so the newest entries are the ones
                 named individually. A sitemap's <lastmod> will do.
 

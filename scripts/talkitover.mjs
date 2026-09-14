@@ -20,11 +20,11 @@ const SITE_URL = 'https://raifdmueller.github.io/talkitover/'
  * wird. Wer hier landet, sucht das Rezept — nicht die Erkenntnisse. */
 const SECTIONS = [
   'index.html',
-  'einstieg.md',
-  'rezepte/rezept-0.md',
-  'rezepte/rezept-1.md',
-  'rezepte/jekyll.md',
-  'rezepte/doctoolchain.md',
+  'einstieg.txt',
+  'rezepte/rezept-0.txt',
+  'rezepte/rezept-1.txt',
+  'rezepte/jekyll.txt',
+  'rezepte/doctoolchain.txt',
   'galerie/index.html',
   'erkenntnisse/index.html',
 ]
@@ -33,12 +33,12 @@ const SECTIONS = [
  * Pages als application/octet-stream aus — ein Fetcher lehnt das ab (#35). */
 const SKIP = ['demo.html', 'text']
 
-const prose = firstCodeBlock(fs.readFileSync(path.join(ROOT, 'docs/prompts/site.md'), 'utf-8'))
+const prose = firstCodeBlock(fs.readFileSync(path.join(ROOT, 'docs/prompts/site.txt'), 'utf-8'))
 
 /** Der Prompt ist der erste Codeblock der Content-Typ-Datei — wie im Rezept. */
 function firstCodeBlock(markdown) {
   const found = markdown.match(/^```\n([\s\S]*?)^```/m)
-  if (!found) throw new Error('In prompts/site.md steht kein Codeblock.')
+  if (!found) throw new Error('In prompts/site.txt steht kein Codeblock.')
   return found[1].trimEnd()
 }
 

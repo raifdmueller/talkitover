@@ -89,7 +89,7 @@ STEP 5 — Fetch the content-type prompt.
 
   The site button hands over an index, so the type is:
 
-    catalog    https://raifdmueller.github.io/talkitover/prompts/katalog.md
+    catalog    https://raifdmueller.github.io/talkitover/prompts/katalog.txt
 
   Fetch that file and take the content of its FIRST fenced code block, verbatim,
   as the prompt attribute. Write the version from its header into data-prompt.
@@ -133,7 +133,7 @@ STEP 5 — Fetch the content-type prompt.
   set data-prompt="custom". A later update must not overwrite their wording.
 
   A maintainer who wants per-page buttons in addition can use the "reference"
-  type (prompts/referenz.md). Do not add them on your own: they multiply across
+  type (prompts/referenz.txt). Do not add them on your own: they multiply across
   every page and hand over a fragment each.
 
 STEP 6 — Check your own work, then open the pull request.

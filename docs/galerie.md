@@ -31,7 +31,7 @@ bestanden.
 
 ## Deine Site fehlt hier
 
-Dann [fang an]({{ site.baseurl }}/einstieg.md) — ein Prompt in Claude Code, ein
+Dann [fang an]({{ site.baseurl }}/einstieg.txt) — ein Prompt in Claude Code, ein
 Pull Request, kein Betrieb. Danach ein Issue im
 [Repo](https://github.com/raifdmueller/talkitover/issues), und sie steht hier.
 

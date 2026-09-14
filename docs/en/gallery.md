@@ -31,7 +31,7 @@ served as text. What stands here has passed that check.
 
 ## Your site is missing here
 
-Then [get started]({{ site.baseurl }}/einstieg.md) — one prompt in Claude Code,
+Then [get started]({{ site.baseurl }}/einstieg.txt) — one prompt in Claude Code,
 one pull request, nothing to operate. Then open an issue in the
 [repository](https://github.com/raifdmueller/talkitover/issues), and it stands
 here.

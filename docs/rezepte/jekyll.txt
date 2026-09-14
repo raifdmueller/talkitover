@@ -62,7 +62,7 @@ STEP 4 — Install the generator and its configuration.
                 unchanged are ALREADY text. The prompt names them where they
                 lie; a converted copy next to them would only go stale
     prose       the first fenced code block of
-                https://raifdmueller.github.io/talkitover/prompts/site.md
+                https://raifdmueller.github.io/talkitover/prompts/site.txt
 
   The script writes the prompt into `<source>/_data/talkitover.json`.
 

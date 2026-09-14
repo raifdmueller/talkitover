@@ -67,7 +67,7 @@ way — measured and written down:
 
 ## How to start
 
-1. [Copy the entry prompt]({{ site.baseurl }}/einstieg.md)
+1. [Copy the entry prompt]({{ site.baseurl }}/einstieg.txt)
 2. Paste it into Claude Code, in the repository of your site.
 3. Review the pull request and merge it.
 
@@ -78,10 +78,10 @@ asks. Where it does not know it, it stops and says why — it does not improvise
 
 | Case | Recipe |
 |---|---|
-| Sources already Markdown or AsciiDoc, index from the build | [Recipe 0]({{ site.baseurl }}/rezepte/rezept-0.md) |
-| Hand-written HTML in the repository, a build step present | [Recipe 1]({{ site.baseurl }}/rezepte/rezept-1.md) |
-| Jekyll | [Recipe Jekyll]({{ site.baseurl }}/rezepte/jekyll.md) |
-| docToolchain | [Recipe docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.md) |
+| Sources already Markdown or AsciiDoc, index from the build | [Recipe 0]({{ site.baseurl }}/rezepte/rezept-0.txt) |
+| Hand-written HTML in the repository, a build step present | [Recipe 1]({{ site.baseurl }}/rezepte/rezept-1.txt) |
+| Jekyll | [Recipe Jekyll]({{ site.baseurl }}/rezepte/jekyll.txt) |
+| docToolchain | [Recipe docToolchain]({{ site.baseurl }}/rezepte/doctoolchain.txt) |
 | Antora, Hugo, MkDocs | not in V1 |
 
 The recipes are written in English — they are read by Claude Code, not by you.

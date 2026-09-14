@@ -31,7 +31,7 @@ weiter, wenn es uns nicht mehr gibt.
 
 == Loslegen
 
-. {site}/einstieg.md[Einstiegs-Prompt] kopieren.
+. {site}/einstieg.txt[Einstiegs-Prompt] kopieren.
 . In Claude Code einfügen, im Repo deiner Site.
 . Pull Request reviewen und mergen.
 
@@ -48,7 +48,7 @@ sagt warum — es improvisiert nicht.
 |`docs/talkitover.js`
 |Das Web Component, Version 1.0.7. Vendored, nie vom CDN geladen.
 
-|`docs/einstieg.md`
+|`docs/einstieg.txt`
 |Der Prompt, mit dem alles anfängt: Generator erkennen, Rezept holen.
 
 |`docs/rezepte/`
