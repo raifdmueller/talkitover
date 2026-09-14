@@ -29,9 +29,10 @@ const SECTIONS = [
   'erkenntnisse/index.html',
 ]
 
-/* demo.html ist eine Testseite ohne Inhalt für Leser. prd.adoc liefert GitHub
- * Pages als application/octet-stream aus — ein Fetcher lehnt das ab (#35). */
-const SKIP = ['demo.html', 'text']
+/* demo.html ist eine Testseite ohne Inhalt für Leser, t6.html ein Messaufbau aus
+ * Fülltext. prd.adoc liefert GitHub Pages als application/octet-stream aus — ein
+ * Fetcher lehnt das ab (#35). */
+const SKIP = ['demo.html', 't6.html', 'text']
 
 const prose = firstCodeBlock(fs.readFileSync(path.join(ROOT, 'docs/prompts/site.txt'), 'utf-8'))
 

@@ -31,6 +31,9 @@ jobs:
       # gibt: Der erste erzeugt das HTML, das Script liest es und schreibt die
       # Textfassungen und den Prompt, der zweite rendert damit den Button.
       # So macht diese Site, was ihr Jekyll-Rezept vorschreibt (#21).
+      # Der Messaufbau T6 muss vor dem ersten Durchlauf stehen: Die Seite hat
+      # Front Matter und wird von Jekyll gerendert wie jede andere.
+      - run: npm run build:t6
       - uses: actions/jekyll-build-pages@v1
         with:
           source: ./docs
