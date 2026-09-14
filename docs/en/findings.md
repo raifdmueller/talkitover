@@ -256,11 +256,33 @@ Truncation is silent. Half a file reads like a whole one.
 For ChatGPT the number is still open. There the fetch failed at the content type,
 before length could matter.
 
+## The provider URL is far more generous than we assumed
+
+6000 characters stood as `MAX_URL_LENGTH` in the web component — conservatively
+chosen, never measured. Done on 2026-09-14, with links of exactly known length
+and an end marker as the last line: if it comes back in the chat, the prompt
+arrived whole.
+
+| URL length | Claude | ChatGPT |
+|---|---|---|
+| 30,000 | complete | complete |
+
+Both providers take five times our assumption. The tightest spot in the system,
+the one we worried about — Semantic Anchors at 5891 of 6000 — was never tight.
+
+**The value still stands at 6000.** 30,000 was the top of the test series, so a
+lower bound, not a limit. Setting a value at the edge of what is measured would
+be guessing again, only with more confidence — and we corrected exactly that
+mistake once already today, further up this page. The series now runs to
+200,000.
+
 ## What is still open
 
-The provider URL limit is still a guess. 6000 characters is a conservative value,
-not a measured one. A button with a deliberately long prompt would show whether
-everything still arrives in the chat — that test is outstanding.
+Where the provider URL actually breaks. We know a lower bound of 30,000 for both
+providers, not the limit.
 
-Until then the conservative value stands, and the test that guards it fails
+And the truncation limit for ChatGPT: there the fetch failed at the content type
+before length could matter. For Claude it is around 100 KB, see above.
+
+Until then the conservative values stand, and the tests that guard them fail
 before the readership notices.

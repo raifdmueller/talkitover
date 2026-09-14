@@ -262,11 +262,35 @@ liest sich wie eine ganze.
 Für ChatGPT ist die Zahl weiter offen. Dort scheiterte der Abruf schon am
 Content-Type, bevor die Länge eine Rolle spielte.
 
+## Die Provider-URL ist viel großzügiger als angenommen
+
+6000 Zeichen standen als `MAX_URL_LENGTH` im Web Component — konservativ
+gewählt, nie gemessen. Am 14.09.2026 nachgeholt, mit Links genau bekannter
+Länge und einer Endmarke als letzter Zeile: Kommt sie im Chat an, war der
+Prompt vollständig.
+
+| Länge der URL | Claude | ChatGPT |
+|---|---|---|
+| 30.000 | vollständig | vollständig |
+
+Beide Anbieter nehmen das Fünffache unserer Annahme. Die knappste Stelle im
+System, um die wir uns Sorgen gemacht haben — Semantic Anchors mit 5891 von
+6000 —, war nie knapp.
+
+**Der Wert steht trotzdem weiter auf 6000.** 30.000 war die obere Kante der
+Messreihe, also eine Untergrenze, keine Grenze. Einen Wert auf die Kante des
+Gemessenen zu setzen wäre wieder geraten, nur mit mehr Selbstvertrauen — und
+genau diesen Fehler haben wir heute schon einmal korrigiert, weiter oben auf
+dieser Seite. Die Messreihe läuft jetzt bis 200.000.
+
 ## Was offen ist
 
-Die Grenze der Provider-URL ist weiter geraten. 6000 Zeichen ist ein
-konservativer Wert, kein gemessener. Ein Button mit absichtlich langem Prompt
-zeigt, ob im Chat noch alles ankommt — der Versuch steht aus.
+Wo die Provider-URL wirklich bricht. Wir kennen eine Untergrenze von 30.000
+für beide Anbieter, nicht die Grenze.
 
-Bis dahin gilt der konservative Wert, und der Test, der ihn bewacht, fällt um,
-bevor die Leserschaft es merkt.
+Und die Abschneidegrenze für ChatGPT: Dort scheiterte der Abruf am
+Content-Type, bevor die Länge eine Rolle spielte. Für Claude liegt sie bei rund
+100 KB, siehe oben.
+
+Bis dahin gelten die konservativen Werte, und die Tests, die sie bewachen,
+fallen um, bevor die Leserschaft es merkt.
