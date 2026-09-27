@@ -99,6 +99,12 @@ identische Verweigerung. Kein Format-Problem, sondern eine Regel über die
 Herkunft. Ein Index aus Links listet eine Site also, ohne sie aufzuschließen;
 die Adressen müssen in den Prompt.
 
+NOTE: Für die Adresse im `url`-Attribut zählt das Format dann doch: Verlinke
+auf GitHub Pages eine `.txt`-Datei (oder eine `llms.txt`), nie eine `.md`.
+Pages liefert `.md` als `text/markdown` aus, und ChatGPT lädt das nicht
+(„400 Unsupported content-type"). Claude liest beides, `text/plain` beide
+Anbieter. Der Generator schreibt deshalb `.txt`.
+
 Das erklärt fast alles am Aufbau: warum der Generator die Seiten benennt, warum
 er das URL-Budget misst statt zu raten, und warum lange Inhalte gebündelt
 werden, statt verlinkt.
