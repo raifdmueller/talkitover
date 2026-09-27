@@ -27,12 +27,24 @@
     "name": "Ralf D. Müller",
     "url": "https://rdmueller.github.io/",
     "script": "https://rdmueller.github.io/js/talkitover.js",
-    "target": "https://rdmueller.github.io/text/index.md",
+    "target": "https://rdmueller.github.io/text/index.txt",
     "prompt": "site@1",
     "recipe": "Rezept 1",
     "since": "2026-09-13",
     "note": "Eine persönliche Website ohne Generator. 43 HTML-Seiten wurden zu Textfassungen, 32 nennt der Prompt einzeln.",
     "recipe_en": "Recipe 1",
     "note_en": "A personal website with no generator at all. 43 HTML pages became text versions; the prompt names 32 of them individually."
+  },
+  {
+    "name": "Dark Factory? Kommt auf die Risikoklasse an.",
+    "url": "https://rdmueller.github.io/dark-factory/",
+    "script": "https://rdmueller.github.io/js/talkitover.js",
+    "target": "https://rdmueller.github.io/dark-factory/dark-factory.txt",
+    "prompt": "vortrag@1",
+    "recipe": "von Hand",
+    "since": "2026-09-26",
+    "note": "Ein Vortrag als Gesprächspartner. Die Textfassung erklärt dem LLM die Thesen und seine Rolle: Fragen beantworten, Einwände ehrlich diskutieren, bei Bedarf in Risk-Radar und Harness Wheel vertiefen, und auf Wunsch das eigene Projekt einordnen.",
+    "recipe_en": "by hand",
+    "note_en": "A talk as a conversation partner. The text version explains the theses and its role to the LLM: answer questions, discuss objections honestly, go deeper into the Risk Radar and the Harness Wheel when asked, and place the reader's own project in a risk class on request."
   }
 ]
